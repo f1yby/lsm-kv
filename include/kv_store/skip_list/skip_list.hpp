@@ -54,6 +54,8 @@ public:
   void remove(KeyType key);
   void scan(KeyType key_start, KeyType key_end);
   void display();
+  const SKNode<KeyType, ValType> *begin();
+  const SKNode<KeyType, ValType> *end();
   size_t size();
   ~SkipList();
 };
@@ -239,6 +241,14 @@ inline SkipList<KeyType, ValType>::SkipList(double p)
 template <typename KeyType, typename ValType>
 size_t SkipList<KeyType, ValType>::size() {
   return node_cnt;
+}
+template <typename KeyType, typename ValType>
+const SKNode<KeyType, ValType> *SkipList<KeyType, ValType>::begin() {
+  return head->forwards[0];
+}
+template <typename KeyType, typename ValType>
+const SKNode<KeyType, ValType> *SkipList<KeyType, ValType>::end() {
+  return nil;
 }
 template <typename KeyType, typename ValType>
 inline SKNode<KeyType, ValType>::SKNode(KeyType _key, ValType _val,

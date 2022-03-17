@@ -83,7 +83,22 @@ void SSTable<KeyType, ValType>::write() {
        << (minkey != nullptr ? *minkey : KeyType())
        << (maxkey != nullptr ? *maxkey : KeyType());
   fout << bout;
-  uint32_t offset = 32 + key_size_max * skip_list.size();
+  uint32_t Koffset = 32;
+  uint32_t Voffset = 32 + (key_size_max + sizeof(Koffset)) * skip_list.size();
+
+  for (auto i = skip_list.begin(); i != skip_list.end(); i = i->forwards[0]) {
+    fout.seekp(Koffset);
+    bout << i->key;
+    bout << Voffset;
+    Koffset += bout.size();
+    fout << bout;
+
+    fout.seekp(Voffset);
+    bout << i->val;
+    Voffset += bout.size();
+    fout << bout;
+  }
+  fout.close();
 }
 template <typename KeyType, typename ValType>
 ValType *SSTable<KeyType, ValType>::search(const KeyType &key) {
