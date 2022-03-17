@@ -29,15 +29,15 @@ private:
   enum { INIT_LEVEL = 1, MAX_LEVEL = 32 };
   const double p;
   SKNode<KeyType, ValType> *nil;
-  int randomLevel() const;
-  int node_cnt;
+  [[nodiscard]] int randomLevel() const;
+  size_t node_cnt;
   double level_up;
+  int lvl;
 
 protected:
   SKNode<KeyType, ValType> *head;
 
 public:
-  int lvl;
   /**
    * @brief Construct a new Skip List object
    *
@@ -46,15 +46,15 @@ public:
   /**
    * @brief Construct a new Skip List object
    *
-   * @param p
+   * @param p the probability to goes up a level when insert a key-val
    */
   explicit SkipList(double p);
-  void Insert(KeyType key, ValType value);
-  void Search(KeyType key);
-  void Delete(KeyType key);
-  void RegionSearch(KeyType key_start, KeyType key_end);
-  void Display();
-  void TryLevelUp();
+  void insert(KeyType key, ValType value);
+  ValType *search(KeyType key);
+  void remove(KeyType key);
+  void scan(KeyType key_start, KeyType key_end);
+  void display();
+  size_t size();
   ~SkipList();
 };
 
@@ -86,7 +86,7 @@ inline int SkipList<KeyType, ValType>::randomLevel() const {
   return result;
 }
 template <typename KeyType, typename ValType>
-inline void SkipList<KeyType, ValType>::Insert(KeyType key, ValType value) {
+inline void SkipList<KeyType, ValType>::insert(KeyType key, ValType value) {
   auto nodes = new SKNode<KeyType, ValType> *[MAX_LEVEL];
   auto node = head;
   for (auto curr_lvl = MAX_LEVEL - 1; curr_lvl >= 0; --curr_lvl) {
@@ -101,7 +101,10 @@ inline void SkipList<KeyType, ValType>::Insert(KeyType key, ValType value) {
     node->val = value;
   } else {
     ++node_cnt;
-    TryLevelUp();
+    if (node_cnt >= level_up) {
+      level_up *= p;
+      ++lvl;
+    }
 
     auto node_lvl = SkipList::randomLevel();
     auto node_new = new SKNode<KeyType, ValType>{key, value, NORMAL, node_lvl};
@@ -112,27 +115,35 @@ inline void SkipList<KeyType, ValType>::Insert(KeyType key, ValType value) {
   }
 }
 template <typename KeyType, typename ValType>
-inline void SkipList<KeyType, ValType>::Search(KeyType key) {
+inline ValType *SkipList<KeyType, ValType>::search(KeyType key) {
   auto node = head;
   for (auto curr_lvl = lvl - 1; curr_lvl >= 0; --curr_lvl) {
+#ifdef DEBUG
     print_node(node, curr_lvl);
+#endif
     while (node->forwards[curr_lvl]->type != SKNodeType::END &&
            node->forwards[curr_lvl]->key < key) {
       node = node->forwards[curr_lvl];
+#ifdef DEBUG
       print_node(node, curr_lvl);
+#endif
     }
   }
   node = node->forwards[0];
+#ifdef DEBUG
   print_node(node, 0);
+#endif
   if (node->key == key) {
+#ifdef DEBUG
     std::cout << node->val << std::endl;
-    return; // found
+#endif
+    return &(node->val); // found
   }
-  std::cout << "Not Found" << std::endl;
+  return nullptr;
   // not found
 }
 template <typename KeyType, typename ValType>
-inline void SkipList<KeyType, ValType>::Delete(KeyType key) {
+inline void SkipList<KeyType, ValType>::remove(KeyType key) {
   auto nodes = new SKNode<KeyType, ValType> *[MAX_LEVEL];
   auto node = head;
   for (int curr_lvl = MAX_LEVEL; curr_lvl >= 0; --curr_lvl) {
@@ -154,21 +165,25 @@ inline void SkipList<KeyType, ValType>::Delete(KeyType key) {
   }
 }
 template <typename KeyType, typename ValType>
-inline void SkipList<KeyType, ValType>::Display() {
+inline void SkipList<KeyType, ValType>::display() {
   for (int i = MAX_LEVEL - 1; i >= 0; --i) {
+#ifdef NDEBUG
     std::cout << "Level " << i + 1 << ":h";
+#endif
     auto *node = head->forwards[i];
     while (node->type != SKNodeType::END) {
+#ifdef NDEBUG
       std::cout << "-->(" << node->key << "," << node->val << ")";
+#endif
       node = node->forwards[i];
     }
-
+#ifdef NDEBUG
     std::cout << "-->N" << std::endl;
+#endif
   }
 }
 template <typename KeyType, typename ValType>
-inline void SkipList<KeyType, ValType>::RegionSearch(KeyType key,
-                                                     KeyType key_end) {
+inline void SkipList<KeyType, ValType>::scan(KeyType key, KeyType key_end) {
 
   auto node = head;
   for (auto curr_lvl = lvl - 1; curr_lvl >= 0; --curr_lvl) {
@@ -208,8 +223,10 @@ inline SkipList<KeyType, ValType>::~SkipList() {
 template <typename KeyType, typename ValType>
 inline SkipList<KeyType, ValType>::SkipList(double p)
     : node_cnt(0), p(p), lvl(INIT_LEVEL) {
-  nil = new SKNode<KeyType, ValType>(INT_MAX, 0, SKNodeType::END, MAX_LEVEL);
-  head = new SKNode<KeyType, ValType>(0, 0, SKNodeType::HEAD, MAX_LEVEL, nil);
+  nil = new SKNode<KeyType, ValType>(KeyType(), ValType(), SKNodeType::END,
+                                     MAX_LEVEL);
+  head = new SKNode<KeyType, ValType>(KeyType(), ValType(), SKNodeType::HEAD,
+                                      MAX_LEVEL, nil);
 
   for (auto &forward : head->forwards) {
     forward = nil;
@@ -220,11 +237,8 @@ inline SkipList<KeyType, ValType>::SkipList(double p)
   }
 }
 template <typename KeyType, typename ValType>
-inline void SkipList<KeyType, ValType>::TryLevelUp() {
-  if (node_cnt >= level_up) {
-    level_up *= p;
-    ++lvl;
-  }
+size_t SkipList<KeyType, ValType>::size() {
+  return node_cnt;
 }
 template <typename KeyType, typename ValType>
 inline SKNode<KeyType, ValType>::SKNode(KeyType _key, ValType _val,

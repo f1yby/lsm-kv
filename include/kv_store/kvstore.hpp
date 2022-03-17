@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <list>
 #include <string>
+#include <utility>
 template <typename KeyType, typename ValType> class KeyValStore {
 private:
   /**
@@ -13,9 +14,7 @@ private:
    *
    */
   const std::string dir;
-  SkipList<KeyType, ValType> memtable;
-  BloomFilter<ValType> filter;
-  SSTable<KeyType, ValType> sstable;
+  SSTable<KeyType, ValType> *sstable;
 
 public:
   /**
@@ -23,17 +22,17 @@ public:
    *
    * @param dir Directory to SSTable Root
    */
-  KeyValStore(const std::string &dir, std::size_t m = 10240)
-      : dir(dir), sstable(dir), memtable(), filter(m) {}
+  explicit KeyValStore(std::string dir, std::size_t m = 10240)
+      : dir(std::move(dir)), sstable(new SSTable<KeyType, ValType>("data/lvl0")) {}
   KeyValStore() = delete;
 
   /**
-   * @brief Insert/Update the key-value pair
+   * @brief insert/Update the key-value pair
    *
    * @param key
    * @param val
    */
-  void put(KeyType key, const ValType &val);
+  void put(const KeyType &key, const ValType &val);
 
   /**
    * @brief Returns the value of the given key.
@@ -41,7 +40,7 @@ public:
    * @param key
    * @return ValType
    */
-  ValType get(KeyType key);
+  ValType get(const KeyType &key) const;
 
   /**
    * @brief Delete the given key-value pair if it exists.
@@ -51,7 +50,7 @@ public:
    * @return false key not found
    */
 
-  bool del(KeyType key);
+  bool del(const KeyType &key);
 
   /**
    * @brief This resets the kvstore. All key-value pairs should be removed,
@@ -70,6 +69,15 @@ public:
    * @param list
    */
   void scan(KeyType key1, KeyType key2,
-            std::list<std::pair<KeyType, ValType>> &list);
+            std::list<std::pair<KeyType, ValType>> &list) const;
 };
+template <typename KeyType, typename ValType>
+void KeyValStore<KeyType, ValType>::put(const KeyType &key,
+                                        const ValType &val) {
+
+}
+template <typename KeyType, typename ValType>
+void KeyValStore<KeyType, ValType>::scan(
+    KeyType key1, KeyType key2,
+    std::list<std::pair<KeyType, ValType>> &list) const {}
 #endif

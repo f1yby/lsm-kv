@@ -14,7 +14,7 @@ private:
   std::size_t _m;
 
 public:
-  BloomFilter(std::size_t m, std::size_t s = 0)
+  explicit BloomFilter(std::size_t m, std::size_t s = 0)
       : _data(std::vector<std::uint16_t>()), _hash(H(s)), _m(m) {
     _data.resize(m, 0);
   }
