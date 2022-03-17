@@ -1,0 +1,160 @@
+\hypertarget{class_key_val_store}{}\doxysection{Key\+Val\+Store$<$ Key\+Type, Val\+Type $>$ Class Template Reference}
+\label{class_key_val_store}\index{KeyValStore$<$ KeyType, ValType $>$@{KeyValStore$<$ KeyType, ValType $>$}}
+
+
+{\ttfamily \#include $<$kvstore.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_key_val_store_abaef644f1a72c12ecb2ab5a482171757}{Key\+Val\+Store}} (const std\+::string \&dir)
+\begin{DoxyCompactList}\small\item\em Construct a new K\+V\+Store object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_key_val_store_a4ab8f814a48c5d4f0a8b71469bd7e4c4}{Key\+Val\+Store}} ()=delete
+\item 
+void \mbox{\hyperlink{class_key_val_store_a740977658660d5f81084a2ed989a51f6}{put}} (Key\+Type key, const Val\+Type \&val)
+\begin{DoxyCompactList}\small\item\em Insert/\+Update the key-\/value pair. \end{DoxyCompactList}\item 
+Val\+Type \mbox{\hyperlink{class_key_val_store_a087f00c05acf79d596e5b8dbb99af2a0}{get}} (Key\+Type key)
+\begin{DoxyCompactList}\small\item\em Returns the value of the given key. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_key_val_store_a2d09e681de9d3b5cbcdd0cbd4dd2eb9c}{del}} (Key\+Type key)
+\begin{DoxyCompactList}\small\item\em Delete the given key-\/value pair if it exists. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_key_val_store_aa7a94d8c0ba1fc313bef426dd3874878}{reset}} ()
+\begin{DoxyCompactList}\small\item\em This resets the kvstore. All key-\/value pairs should be removed, including memtable and all sstables files. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_key_val_store_a0985cfcdc5ee0aa105de252e18574190}{scan}} (Key\+Type key1, Key\+Type key2, std\+::list$<$ std\+::pair$<$ Key\+Type, Val\+Type $>$$>$ \&list)
+\begin{DoxyCompactList}\small\item\em Return a list including all the key-\/value pair between key1 and key2.\+keys in the list should be in an ascending order.\+An empty list indicates not found. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Key\+Type, typename Val\+Type$>$\newline
+class Key\+Val\+Store$<$ Key\+Type, Val\+Type $>$}
+
+
+
+Definition at line 7 of file kvstore.\+hpp.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_key_val_store_abaef644f1a72c12ecb2ab5a482171757}\label{class_key_val_store_abaef644f1a72c12ecb2ab5a482171757}} 
+\index{KeyValStore$<$ KeyType, ValType $>$@{KeyValStore$<$ KeyType, ValType $>$}!KeyValStore@{KeyValStore}}
+\index{KeyValStore@{KeyValStore}!KeyValStore$<$ KeyType, ValType $>$@{KeyValStore$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{KeyValStore()}{KeyValStore()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+\mbox{\hyperlink{class_key_val_store}{Key\+Val\+Store}}$<$ Key\+Type, Val\+Type $>$\+::\mbox{\hyperlink{class_key_val_store}{Key\+Val\+Store}} (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{dir }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct a new K\+V\+Store object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dir} & Directory to S\+S\+Table Root \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 21 of file kvstore.\+hpp.
+
+\mbox{\Hypertarget{class_key_val_store_a4ab8f814a48c5d4f0a8b71469bd7e4c4}\label{class_key_val_store_a4ab8f814a48c5d4f0a8b71469bd7e4c4}} 
+\index{KeyValStore$<$ KeyType, ValType $>$@{KeyValStore$<$ KeyType, ValType $>$}!KeyValStore@{KeyValStore}}
+\index{KeyValStore@{KeyValStore}!KeyValStore$<$ KeyType, ValType $>$@{KeyValStore$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{KeyValStore()}{KeyValStore()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+\mbox{\hyperlink{class_key_val_store}{Key\+Val\+Store}}$<$ Key\+Type, Val\+Type $>$\+::\mbox{\hyperlink{class_key_val_store}{Key\+Val\+Store}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_key_val_store_a2d09e681de9d3b5cbcdd0cbd4dd2eb9c}\label{class_key_val_store_a2d09e681de9d3b5cbcdd0cbd4dd2eb9c}} 
+\index{KeyValStore$<$ KeyType, ValType $>$@{KeyValStore$<$ KeyType, ValType $>$}!del@{del}}
+\index{del@{del}!KeyValStore$<$ KeyType, ValType $>$@{KeyValStore$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{del()}{del()}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+bool \mbox{\hyperlink{class_key_val_store}{Key\+Val\+Store}}$<$ Key\+Type, Val\+Type $>$\+::del (\begin{DoxyParamCaption}\item[{Key\+Type}]{key }\end{DoxyParamCaption})}
+
+
+
+Delete the given key-\/value pair if it exists. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true key found 
+
+false key not found 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_key_val_store_a087f00c05acf79d596e5b8dbb99af2a0}\label{class_key_val_store_a087f00c05acf79d596e5b8dbb99af2a0}} 
+\index{KeyValStore$<$ KeyType, ValType $>$@{KeyValStore$<$ KeyType, ValType $>$}!get@{get}}
+\index{get@{get}!KeyValStore$<$ KeyType, ValType $>$@{KeyValStore$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+Val\+Type \mbox{\hyperlink{class_key_val_store}{Key\+Val\+Store}}$<$ Key\+Type, Val\+Type $>$\+::get (\begin{DoxyParamCaption}\item[{Key\+Type}]{key }\end{DoxyParamCaption})}
+
+
+
+Returns the value of the given key. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Val\+Type 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_key_val_store_a740977658660d5f81084a2ed989a51f6}\label{class_key_val_store_a740977658660d5f81084a2ed989a51f6}} 
+\index{KeyValStore$<$ KeyType, ValType $>$@{KeyValStore$<$ KeyType, ValType $>$}!put@{put}}
+\index{put@{put}!KeyValStore$<$ KeyType, ValType $>$@{KeyValStore$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{put()}{put()}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+void \mbox{\hyperlink{class_key_val_store}{Key\+Val\+Store}}$<$ Key\+Type, Val\+Type $>$\+::put (\begin{DoxyParamCaption}\item[{Key\+Type}]{key,  }\item[{const Val\+Type \&}]{val }\end{DoxyParamCaption})}
+
+
+
+Insert/\+Update the key-\/value pair. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & \\
+\hline
+{\em val} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_key_val_store_aa7a94d8c0ba1fc313bef426dd3874878}\label{class_key_val_store_aa7a94d8c0ba1fc313bef426dd3874878}} 
+\index{KeyValStore$<$ KeyType, ValType $>$@{KeyValStore$<$ KeyType, ValType $>$}!reset@{reset}}
+\index{reset@{reset}!KeyValStore$<$ KeyType, ValType $>$@{KeyValStore$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{reset()}{reset()}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+void \mbox{\hyperlink{class_key_val_store}{Key\+Val\+Store}}$<$ Key\+Type, Val\+Type $>$\+::reset (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+This resets the kvstore. All key-\/value pairs should be removed, including memtable and all sstables files. 
+
+\mbox{\Hypertarget{class_key_val_store_a0985cfcdc5ee0aa105de252e18574190}\label{class_key_val_store_a0985cfcdc5ee0aa105de252e18574190}} 
+\index{KeyValStore$<$ KeyType, ValType $>$@{KeyValStore$<$ KeyType, ValType $>$}!scan@{scan}}
+\index{scan@{scan}!KeyValStore$<$ KeyType, ValType $>$@{KeyValStore$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{scan()}{scan()}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+void \mbox{\hyperlink{class_key_val_store}{Key\+Val\+Store}}$<$ Key\+Type, Val\+Type $>$\+::scan (\begin{DoxyParamCaption}\item[{Key\+Type}]{key1,  }\item[{Key\+Type}]{key2,  }\item[{std\+::list$<$ std\+::pair$<$ Key\+Type, Val\+Type $>$$>$ \&}]{list }\end{DoxyParamCaption})}
+
+
+
+Return a list including all the key-\/value pair between key1 and key2.\+keys in the list should be in an ascending order.\+An empty list indicates not found. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key1} & \\
+\hline
+{\em key2} & \\
+\hline
+{\em list} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/kv\+\_\+store/\mbox{\hyperlink{kvstore_8hpp}{kvstore.\+hpp}}\end{DoxyCompactItemize}

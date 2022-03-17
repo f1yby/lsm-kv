@@ -1,0 +1,190 @@
+\hypertarget{class_skip_list}{}\doxysection{Skip\+List$<$ Key\+Type, Val\+Type $>$ Class Template Reference}
+\label{class_skip_list}\index{SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}}
+
+
+{\ttfamily \#include $<$skip\+\_\+list.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_skip_list_add93963f1797ff02e7b819153fbcaefa}{Skip\+List}} ()
+\item 
+\mbox{\hyperlink{class_skip_list_a216049af895120d033adfbbaa2270fdb}{Skip\+List}} (double p)
+\item 
+void \mbox{\hyperlink{class_skip_list_ad04238c8702b25e11be8755ca6be6590}{Insert}} (Key\+Type key, Val\+Type value)
+\item 
+void \mbox{\hyperlink{class_skip_list_a3cb34a55bb97702a195c43658d5a1927}{Search}} (Key\+Type key)
+\item 
+void \mbox{\hyperlink{class_skip_list_aa06c254f4e620b20f4cb76a85b154b87}{Delete}} (Key\+Type key)
+\item 
+void \mbox{\hyperlink{class_skip_list_a37da47aed00effc0798c2ac4ccc0e0ac}{Region\+Search}} (Key\+Type key\+\_\+start, Key\+Type key\+\_\+end)
+\item 
+void \mbox{\hyperlink{class_skip_list_aec581a04c8c5f43b53e955ac92cbc692}{Display}} ()
+\item 
+void \mbox{\hyperlink{class_skip_list_a59ea3e21967682d62af1e3e0dfad7fcf}{Try\+Level\+Up}} ()
+\item 
+\mbox{\hyperlink{class_skip_list_a417b4be7f2dfd5f6415d861c721600d9}{$\sim$\+Skip\+List}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{class_skip_list_a7dfb75aa89d315ec7d3acd22806a5d3a}{lvl}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_s_k_node}{S\+K\+Node}}$<$ Key\+Type, Val\+Type $>$ $\ast$ \mbox{\hyperlink{class_skip_list_a9fb4b460c569868ff57f7177352d8ad7}{head}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Key\+Type, typename Val\+Type$>$\newline
+class Skip\+List$<$ Key\+Type, Val\+Type $>$}
+
+
+
+Definition at line 11 of file skip\+\_\+list.\+hpp.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_skip_list_add93963f1797ff02e7b819153fbcaefa}\label{class_skip_list_add93963f1797ff02e7b819153fbcaefa}} 
+\index{SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}!SkipList@{SkipList}}
+\index{SkipList@{SkipList}!SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{SkipList()}{SkipList()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+\mbox{\hyperlink{class_skip_list}{Skip\+List}}$<$ Key\+Type, Val\+Type $>$\+::\mbox{\hyperlink{class_skip_list}{Skip\+List}}\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 179 of file skip\+\_\+list.\+hpp.
+
+\mbox{\Hypertarget{class_skip_list_a216049af895120d033adfbbaa2270fdb}\label{class_skip_list_a216049af895120d033adfbbaa2270fdb}} 
+\index{SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}!SkipList@{SkipList}}
+\index{SkipList@{SkipList}!SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{SkipList()}{SkipList()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+\mbox{\hyperlink{class_skip_list}{Skip\+List}}$<$ Key\+Type, Val\+Type $>$\+::\mbox{\hyperlink{class_skip_list}{Skip\+List}} (\begin{DoxyParamCaption}\item[{double}]{p }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+
+
+Definition at line 202 of file skip\+\_\+list.\+hpp.
+
+\mbox{\Hypertarget{class_skip_list_a417b4be7f2dfd5f6415d861c721600d9}\label{class_skip_list_a417b4be7f2dfd5f6415d861c721600d9}} 
+\index{SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}!````~SkipList@{$\sim$SkipList}}
+\index{````~SkipList@{$\sim$SkipList}!SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{$\sim$SkipList()}{~SkipList()}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+\mbox{\hyperlink{class_skip_list}{Skip\+List}}$<$ Key\+Type, Val\+Type $>$\+::$\sim$\mbox{\hyperlink{class_skip_list}{Skip\+List}}\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 192 of file skip\+\_\+list.\+hpp.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_skip_list_aa06c254f4e620b20f4cb76a85b154b87}\label{class_skip_list_aa06c254f4e620b20f4cb76a85b154b87}} 
+\index{SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}!Delete@{Delete}}
+\index{Delete@{Delete}!SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{Delete()}{Delete()}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+void \mbox{\hyperlink{class_skip_list}{Skip\+List}}$<$ Key\+Type, Val\+Type $>$\+::Delete (\begin{DoxyParamCaption}\item[{Key\+Type}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 128 of file skip\+\_\+list.\+hpp.
+
+\mbox{\Hypertarget{class_skip_list_aec581a04c8c5f43b53e955ac92cbc692}\label{class_skip_list_aec581a04c8c5f43b53e955ac92cbc692}} 
+\index{SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}!Display@{Display}}
+\index{Display@{Display}!SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{Display()}{Display()}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+void \mbox{\hyperlink{class_skip_list}{Skip\+List}}$<$ Key\+Type, Val\+Type $>$\+::Display\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 150 of file skip\+\_\+list.\+hpp.
+
+\mbox{\Hypertarget{class_skip_list_ad04238c8702b25e11be8755ca6be6590}\label{class_skip_list_ad04238c8702b25e11be8755ca6be6590}} 
+\index{SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}!Insert@{Insert}}
+\index{Insert@{Insert}!SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{Insert()}{Insert()}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+void \mbox{\hyperlink{class_skip_list}{Skip\+List}}$<$ Key\+Type, Val\+Type $>$\+::Insert (\begin{DoxyParamCaption}\item[{Key\+Type}]{key,  }\item[{Val\+Type}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 80 of file skip\+\_\+list.\+hpp.
+
+\mbox{\Hypertarget{class_skip_list_a37da47aed00effc0798c2ac4ccc0e0ac}\label{class_skip_list_a37da47aed00effc0798c2ac4ccc0e0ac}} 
+\index{SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}!RegionSearch@{RegionSearch}}
+\index{RegionSearch@{RegionSearch}!SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{RegionSearch()}{RegionSearch()}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+void \mbox{\hyperlink{class_skip_list}{Skip\+List}}$<$ Key\+Type, Val\+Type $>$\+::Region\+Search (\begin{DoxyParamCaption}\item[{Key\+Type}]{key\+\_\+start,  }\item[{Key\+Type}]{key\+\_\+end }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 163 of file skip\+\_\+list.\+hpp.
+
+\mbox{\Hypertarget{class_skip_list_a3cb34a55bb97702a195c43658d5a1927}\label{class_skip_list_a3cb34a55bb97702a195c43658d5a1927}} 
+\index{SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}!Search@{Search}}
+\index{Search@{Search}!SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{Search()}{Search()}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+void \mbox{\hyperlink{class_skip_list}{Skip\+List}}$<$ Key\+Type, Val\+Type $>$\+::Search (\begin{DoxyParamCaption}\item[{Key\+Type}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 107 of file skip\+\_\+list.\+hpp.
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=278pt]{class_skip_list_a3cb34a55bb97702a195c43658d5a1927_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{class_skip_list_a59ea3e21967682d62af1e3e0dfad7fcf}\label{class_skip_list_a59ea3e21967682d62af1e3e0dfad7fcf}} 
+\index{SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}!TryLevelUp@{TryLevelUp}}
+\index{TryLevelUp@{TryLevelUp}!SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{TryLevelUp()}{TryLevelUp()}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+void \mbox{\hyperlink{class_skip_list}{Skip\+List}}$<$ Key\+Type, Val\+Type $>$\+::Try\+Level\+Up\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 216 of file skip\+\_\+list.\+hpp.
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{class_skip_list_a9fb4b460c569868ff57f7177352d8ad7}\label{class_skip_list_a9fb4b460c569868ff57f7177352d8ad7}} 
+\index{SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}!head@{head}}
+\index{head@{head}!SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{head}{head}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+\mbox{\hyperlink{struct_s_k_node}{S\+K\+Node}}$<$Key\+Type, Val\+Type$>$$\ast$ \mbox{\hyperlink{class_skip_list}{Skip\+List}}$<$ Key\+Type, Val\+Type $>$\+::head\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line 37 of file skip\+\_\+list.\+hpp.
+
+\mbox{\Hypertarget{class_skip_list_a7dfb75aa89d315ec7d3acd22806a5d3a}\label{class_skip_list_a7dfb75aa89d315ec7d3acd22806a5d3a}} 
+\index{SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}!lvl@{lvl}}
+\index{lvl@{lvl}!SkipList$<$ KeyType, ValType $>$@{SkipList$<$ KeyType, ValType $>$}}
+\doxysubsubsection{\texorpdfstring{lvl}{lvl}}
+{\footnotesize\ttfamily template$<$typename Key\+Type , typename Val\+Type $>$ \\
+int \mbox{\hyperlink{class_skip_list}{Skip\+List}}$<$ Key\+Type, Val\+Type $>$\+::lvl}
+
+
+
+Definition at line 40 of file skip\+\_\+list.\+hpp.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/kv\+\_\+store/skip\+\_\+list/\mbox{\hyperlink{skip__list_8hpp}{skip\+\_\+list.\+hpp}}\end{DoxyCompactItemize}
