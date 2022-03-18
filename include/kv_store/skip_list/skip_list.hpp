@@ -50,9 +50,10 @@ public:
    */
   explicit SkipList(double p);
   void insert(KeyType key, ValType value);
-  ValType *search(KeyType key);
+  ValType *search(KeyType key) const;
   void remove(KeyType key);
-  void scan(KeyType key_start, KeyType key_end);
+  std::list<SKNode<KeyType, ValType> *> scan(KeyType key_start,
+                                             KeyType key_end);
   void display();
   const SKNode<KeyType, ValType> *begin();
   const SKNode<KeyType, ValType> *end();
@@ -115,9 +116,10 @@ inline void SkipList<KeyType, ValType>::insert(KeyType key, ValType value) {
       nodes[i]->forwards[i] = node_new;
     }
   }
+  delete[] nodes;
 }
 template <typename KeyType, typename ValType>
-inline ValType *SkipList<KeyType, ValType>::search(KeyType key) {
+inline ValType *SkipList<KeyType, ValType>::search(KeyType key) const {
   auto node = head;
   for (auto curr_lvl = lvl - 1; curr_lvl >= 0; --curr_lvl) {
 #ifdef DEBUG
@@ -169,23 +171,24 @@ inline void SkipList<KeyType, ValType>::remove(KeyType key) {
 template <typename KeyType, typename ValType>
 inline void SkipList<KeyType, ValType>::display() {
   for (int i = MAX_LEVEL - 1; i >= 0; --i) {
-#ifdef NDEBUG
+#ifdef DEBUG
     std::cout << "Level " << i + 1 << ":h";
 #endif
     auto *node = head->forwards[i];
     while (node->type != SKNodeType::END) {
-#ifdef NDEBUG
+#ifdef DEBUG
       std::cout << "-->(" << node->key << "," << node->val << ")";
 #endif
       node = node->forwards[i];
     }
-#ifdef NDEBUG
+#ifdef DEBUG
     std::cout << "-->N" << std::endl;
 #endif
   }
 }
 template <typename KeyType, typename ValType>
-inline void SkipList<KeyType, ValType>::scan(KeyType key, KeyType key_end) {
+inline std::list<SKNode<KeyType, ValType> *>
+SkipList<KeyType, ValType>::scan(KeyType key, KeyType key_end) {
 
   auto node = head;
   for (auto curr_lvl = lvl - 1; curr_lvl >= 0; --curr_lvl) {
@@ -195,9 +198,12 @@ inline void SkipList<KeyType, ValType>::scan(KeyType key, KeyType key_end) {
     }
   }
   node = node->forwards[0];
+  std::list<SKNode<KeyType, ValType> *> ans;
   while (node->type != SKNodeType::END && node->key < key_end) {
+    ans.push_back(node);
     node = node->forwards[0];
   }
+  return ans;
 }
 template <typename KeyType, typename ValType>
 inline SkipList<KeyType, ValType>::SkipList()
