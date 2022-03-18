@@ -16,6 +16,7 @@ public:
   void clear() { buffer.clear(); }
   friend std::ostream &operator<<(std::ostream &o, bitstream &b);
   friend bitstream &operator<<(bitstream &b, uint8_t uint8);
+  friend bitstream &operator<<(bitstream &b, uint16_t uint16);
   friend bitstream &operator<<(bitstream &b, uint32_t uint32);
   friend bitstream &operator<<(bitstream &b, uint64_t uint64);
   friend bitstream &operator<<(bitstream &b, const std::string &s);
@@ -32,7 +33,12 @@ bitstream &operator<<(bitstream &b, uint8_t uint8) {
   b.buffer.push_back(uint8);
   return b;
 }
-
+bitstream &operator<<(bitstream &b, const uint16_t uint16) {
+  auto *c = (uint8_t *)&uint16;
+  b.buffer.push_back(c[0]);
+  b.buffer.push_back(c[1]);
+  return b;
+}
 bitstream &operator<<(bitstream &b, const uint32_t uint32) {
   auto *c = (uint8_t *)&uint32;
   b.buffer.push_back(c[0]);

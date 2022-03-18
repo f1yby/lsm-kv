@@ -3,6 +3,7 @@
 #include "./bloom_filter/bloom_filter.hpp"
 #include "./skip_list/skip_list.hpp"
 #include "./ss_table/ss_table.hpp"
+#include "./ss_table/index.hpp"
 #include <cstddef>
 #include <list>
 #include <string>
@@ -23,7 +24,8 @@ public:
    * @param dir Directory to SSTable Root
    */
   explicit KeyValStore(std::string dir, std::size_t m = 10240)
-      : dir(std::move(dir)), sstable(new SSTable<KeyType, ValType>("data/lvl0")) {}
+      : dir(std::move(dir)),
+        sstable(new SSTable<KeyType, ValType>("data/lvl0")) {}
   KeyValStore() = delete;
 
   /**
@@ -73,9 +75,7 @@ public:
 };
 template <typename KeyType, typename ValType>
 void KeyValStore<KeyType, ValType>::put(const KeyType &key,
-                                        const ValType &val) {
-
-}
+                                        const ValType &val) {}
 template <typename KeyType, typename ValType>
 void KeyValStore<KeyType, ValType>::scan(
     KeyType key1, KeyType key2,
