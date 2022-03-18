@@ -1,10 +1,9 @@
-#ifndef SS_TABLE_SS_TABLE_H
-#define SS_TABLE_SS_TABLE_H
+#ifndef MEM_TABLE_SS_TABLE_H
+#define MEM_TABLE_SS_TABLE_H
 
 #include "kv_store/bitstream.hpp"
 #include "kv_store/bloom_filter/bloom_filter.hpp"
 #include "kv_store/skip_list/skip_list.hpp"
-#include "kv_store/ss_table/ss_table.hpp"
 #include <chrono>
 #include <cstddef>
 #include <cstdio>

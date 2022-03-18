@@ -1,6 +1,7 @@
 #include "kv_store/kvstore.hpp"
 #include "kv_store/mem_table/mem_table.hpp"
 #include "kv_store/ss_table/ss_table.hpp"
+#include "kv_store/ss_table/sst_mgr.hpp"
 #include <string>
 using namespace std;
 
@@ -12,6 +13,8 @@ int main() {
   for (auto i : table.scan(0, 3)) {
     std::cout << i->val << std::endl;
   }
-  std::cout << table.write("1.txt").check(3) << std::endl;
+  kvs::SSTMgr<uint64_t, std::string> ssm;
+  ssm.search(10);
+  std::cout << table.write("1.txt").check(2) << std::endl;
   return 0;
 }

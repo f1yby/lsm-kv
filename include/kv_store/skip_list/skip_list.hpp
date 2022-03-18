@@ -3,6 +3,7 @@
 #include <climits>
 #include <ctime>
 #include <iostream>
+#include <list>
 #include <random>
 #include <vector>
 

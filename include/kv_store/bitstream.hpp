@@ -14,6 +14,8 @@ public:
   bitstream() = default;
   std::size_t size() { return buffer.size(); }
   void clear() { buffer.clear(); }
+  size_t rdnbyte(std::istream &i, size_t n);
+  bitstream &operator>>(std::string &);
   friend std::ostream &operator<<(std::ostream &o, bitstream &b);
   friend bitstream &operator<<(bitstream &b, uint8_t uint8);
   friend bitstream &operator<<(bitstream &b, uint16_t uint16);
@@ -78,6 +80,22 @@ bitstream &operator<<(bitstream &b, const std::string &s) {
     b.buffer.push_back(i);
   }
   return b;
+}
+size_t bitstream::rdnbyte(std::istream &i, size_t n) {
+  int j = 0;
+  uint8_t b;
+  for (; j < n && !i.eof(); ++j) {
+    i >> b;
+    buffer.push_back(b);
+  }
+  return j;
+}
+bitstream &bitstream::operator>>(std::string &s) {
+  for (auto i : buffer) {
+    s.push_back(i);
+  }
+  buffer.clear();
+  return *this;
 }
 } // namespace bio
 

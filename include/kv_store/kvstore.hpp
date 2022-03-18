@@ -1,9 +1,9 @@
 #ifndef KV_STORE_KVSTORE_HPP
 #define KV_STORE_KVSTORE_HPP
-#include "kv_store/ss_table/ss_table.hpp"
 #include "kv_store/bloom_filter/bloom_filter.hpp"
 #include "kv_store/mem_table/mem_table.hpp"
 #include "kv_store/skip_list/skip_list.hpp"
+#include "kv_store/ss_table/ss_table.hpp"
 #include "kv_store/ss_table/sst_mgr.hpp"
 #include <cstddef>
 #include <list>
@@ -15,6 +15,7 @@ template <typename KeyType, typename ValType> class KeyValStore {
 private:
   const std::string dir;
   MemTable<KeyType, ValType> *mem_table;
+  SSTMgr<KeyType, ValType> sst_mgr;
 
 public:
   /**
