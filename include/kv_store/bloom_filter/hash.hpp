@@ -32,16 +32,17 @@ public:
 };
 template <typename T> class MurMurHash {
 private:
-  const std::size_t _round;
+  const std::size_t _round{};
   std::vector<std::size_t> _rounds;
   std::vector<std::size_t> _pool;
 
 public:
-  explicit MurMurHash<T>(std::size_t r) : _round(r > 4 ? 4 : r) {
+  explicit MurMurHash(std::size_t r) : _round(r > 4 ? 4 : r) {
     _rounds.resize(_round, 0);
     _pool.resize(_round, 0);
   }
-  std::vector<std::size_t> *operator()(const T &key){
+  MurMurHash(const MurMurHash &mh) = default;
+  std::vector<std::size_t> *operator()(const T &key) {
     std::uint32_t out[4];
     MurmurHash3_x64_128(&key, sizeof(key), 0, out);
     for (int i = 0; i < _round; ++i) {

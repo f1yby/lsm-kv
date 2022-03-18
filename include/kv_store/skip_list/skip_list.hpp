@@ -15,7 +15,6 @@ template <typename K, typename V>
 inline void print_node(SKNode<K, V> *node, int lvl);
 
 template <typename KeyType, typename ValType> struct SKNode {
-  // enum { MAX_LEVEL = 128 };
   KeyType key;
   ValType val;
   SKNodeType type;
@@ -49,16 +48,18 @@ public:
    * @param p the probability to goes up a level when insert a key-val
    */
   explicit SkipList(double p);
+  SkipList(const SkipList &s);
+  ~SkipList();
+
   void insert(KeyType key, ValType value);
   ValType *search(KeyType key) const;
   void remove(KeyType key);
   std::list<SKNode<KeyType, ValType> *> scan(KeyType key_start,
-                                             KeyType key_end);
+                                             KeyType key_end) const;
   void display();
-  const SKNode<KeyType, ValType> *begin();
-  const SKNode<KeyType, ValType> *end();
-  size_t size();
-  ~SkipList();
+  const SKNode<KeyType, ValType> *begin() const;
+  const SKNode<KeyType, ValType> *end() const;
+  [[nodiscard]] size_t size() const;
 };
 
 inline double rand_() {
@@ -181,14 +182,14 @@ inline void SkipList<KeyType, ValType>::display() {
 #endif
       node = node->forwards[i];
     }
-#ifdef DEBUG
+#ifdef _DEBUG
     std::cout << "-->N" << std::endl;
 #endif
   }
 }
 template <typename KeyType, typename ValType>
 inline std::list<SKNode<KeyType, ValType> *>
-SkipList<KeyType, ValType>::scan(KeyType key, KeyType key_end) {
+SkipList<KeyType, ValType>::scan(KeyType key, KeyType key_end) const {
 
   auto node = head;
   for (auto curr_lvl = lvl - 1; curr_lvl >= 0; --curr_lvl) {
@@ -199,7 +200,7 @@ SkipList<KeyType, ValType>::scan(KeyType key, KeyType key_end) {
   }
   node = node->forwards[0];
   std::list<SKNode<KeyType, ValType> *> ans;
-  while (node->type != SKNodeType::END && node->key < key_end) {
+  while (node->type != SKNodeType::END && node->key <= key_end) {
     ans.push_back(node);
     node = node->forwards[0];
   }
@@ -245,17 +246,19 @@ inline SkipList<KeyType, ValType>::SkipList(double p)
   }
 }
 template <typename KeyType, typename ValType>
-size_t SkipList<KeyType, ValType>::size() {
+size_t SkipList<KeyType, ValType>::size() const {
   return node_cnt;
 }
 template <typename KeyType, typename ValType>
-const SKNode<KeyType, ValType> *SkipList<KeyType, ValType>::begin() {
+const SKNode<KeyType, ValType> *SkipList<KeyType, ValType>::begin() const {
   return head->forwards[0];
 }
 template <typename KeyType, typename ValType>
-const SKNode<KeyType, ValType> *SkipList<KeyType, ValType>::end() {
+const SKNode<KeyType, ValType> *SkipList<KeyType, ValType>::end() const {
   return nil;
 }
+template <typename KeyType, typename ValType>
+SkipList<KeyType, ValType>::SkipList(const SkipList &) {}
 template <typename KeyType, typename ValType>
 inline SKNode<KeyType, ValType>::SKNode(KeyType _key, ValType _val,
                                         SKNodeType _type, int lvl)

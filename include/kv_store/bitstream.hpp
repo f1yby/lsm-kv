@@ -22,6 +22,12 @@ public:
   friend bitstream &operator<<(bitstream &b, const std::string &s);
   friend bitstream &operator<<(bitstream &b, int32_t int32);
 };
+template <typename T> uint32_t bsize(T x) {
+  static bitstream b;
+  b.clear();
+  b << x;
+  return b.size();
+}
 std::ostream &operator<<(std::ostream &o, bitstream &b) {
   for (auto i : b.buffer) {
     o << (char)i;

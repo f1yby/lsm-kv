@@ -1,31 +1,30 @@
 #ifndef KV_STORE_KVSTORE_HPP
 #define KV_STORE_KVSTORE_HPP
-#include "./bloom_filter/bloom_filter.hpp"
-#include "./skip_list/skip_list.hpp"
-#include "./ss_table/ss_table.hpp"
-#include "./ss_table/index.hpp"
+#include "kv_store/ss_table/ss_table.hpp"
+#include "kv_store/bloom_filter/bloom_filter.hpp"
+#include "kv_store/mem_table/mem_table.hpp"
+#include "kv_store/skip_list/skip_list.hpp"
+#include "kv_store/ss_table/sst_mgr.hpp"
 #include <cstddef>
 #include <list>
 #include <string>
 #include <utility>
+namespace kvs {
+
 template <typename KeyType, typename ValType> class KeyValStore {
 private:
-  /**
-   * @brief Directory to SSTable Root
-   *
-   */
   const std::string dir;
-  SSTable<KeyType, ValType> *sstable;
+  MemTable<KeyType, ValType> *mem_table;
 
 public:
   /**
    * @brief Construct a new KVStore object
    *
-   * @param dir Directory to SSTable Root
+   * @param dir Directory to MemTable Root
    */
   explicit KeyValStore(std::string dir, std::size_t m = 10240)
       : dir(std::move(dir)),
-        sstable(new SSTable<KeyType, ValType>("data/lvl0")) {}
+        mem_table(new MemTable<KeyType, ValType>("data/lvl0")) {}
   KeyValStore() = delete;
 
   /**
@@ -43,16 +42,6 @@ public:
    * @return ValType
    */
   ValType get(const KeyType &key) const;
-
-  /**
-   * @brief Delete the given key-value pair if it exists.
-   *
-   * @param key
-   * @return true key found
-   * @return false key not found
-   */
-
-  bool del(const KeyType &key);
 
   /**
    * @brief This resets the kvstore. All key-value pairs should be removed,
@@ -80,4 +69,5 @@ template <typename KeyType, typename ValType>
 void KeyValStore<KeyType, ValType>::scan(
     KeyType key1, KeyType key2,
     std::list<std::pair<KeyType, ValType>> &list) const {}
+} // namespace kvs
 #endif
