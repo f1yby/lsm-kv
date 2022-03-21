@@ -1,4 +1,7 @@
 .cache
 .vscode
+.codechecker
+.idea
 /build
+/cmake-build-debug
 /doc/doxygen
