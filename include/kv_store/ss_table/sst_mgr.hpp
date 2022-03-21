@@ -15,7 +15,8 @@ private:
 public:
   SSTMgr();
   void insert(const SSTable<KeyType> &sst);
-  ValType *search(const KeyType &k);
+  std::unique_ptr<ValType> search(const KeyType &k) const;
+  void clear();
 };
 template <typename KeyType, typename ValType>
 SSTMgr<KeyType, ValType>::SSTMgr() : data(1) {}
@@ -25,28 +26,35 @@ void SSTMgr<KeyType, ValType>::insert(const SSTable<KeyType> &sst) {
   data[0].push_back(sst);
 }
 template <typename KeyType, typename ValType>
-ValType *SSTMgr<KeyType, ValType>::search(const KeyType &k) {
+std::unique_ptr<ValType>
+SSTMgr<KeyType, ValType>::search(const KeyType &k) const {
   // Todo Hierarchy
-  SSTableNode<KeyType> *n;
-  std::string *fp;
-  for (auto i : data[0]) {
+  const SSTableNode<KeyType> *n = nullptr;
+  const std::string *fp;
+  auto *target = &(*data[0].begin());
+  for (auto &i : data[0]) {
     if (i.front() <= k && k <= i.back() && i.check(k)) {
       auto m = i.search(k);
       n = m != nullptr ? m : n;
       fp = &(i.filepath);
     }
   }
-  if (n) {
+  if (n != nullptr) {
     std::ifstream fin;
     fin.open(*fp);
     bio::bitstream bin;
     fin.seekg(n->offset);
     bin.rdnbyte(fin, n->vlen);
-    auto *ans = new ValType();
+    std::unique_ptr<ValType> ans(new ValType());
     bin >> *ans;
     return ans;
   }
-  return nullptr;
+  return std::unique_ptr<ValType>(nullptr);
+}
+template <typename KeyType, typename ValType>
+void SSTMgr<KeyType, ValType>::clear() {
+  data.clear();
+  // TODO Clear the file
 }
 
 } // namespace kvs

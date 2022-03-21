@@ -16,5 +16,20 @@ int main() {
   kvs::SSTMgr<uint64_t, std::string> ssm;
   ssm.search(10);
   std::cout << table.write("1.txt").check(2) << std::endl;
+
+  // KVS
+  kvs::KeyValStore<uint64_t, string> kvst(".");
+
+  kvst.put(1, "Hello");
+  // get from memory
+  std::cout << *kvst.get(1) << std::endl;
+
+  kvst.dump("1.txt");
+  // get from disk
+  std::cout << *kvst.get(1) << std::endl;
+
+  kvst.put(1, "world");
+  // get form memory
+  std::cout << *kvst.get(1) << std::endl;
   return 0;
 }

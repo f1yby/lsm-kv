@@ -27,7 +27,7 @@ public:
 
   [[nodiscard]] uint64_t id() const;
   bool check(const KeyType &k) const;
-  SSTableNode<KeyType> *search(const KeyType &k) const;
+  const SSTableNode<KeyType> *search(const KeyType &k) const;
   KeyType front() const;
   KeyType back() const;
 };
@@ -56,12 +56,12 @@ template <typename KeyType> KeyType SSTable<KeyType>::back() const {
   return table.back().key;
 }
 template <typename KeyType>
-SSTableNode<KeyType> *SSTable<KeyType>::search(const KeyType &k) const {
+const SSTableNode<KeyType> *SSTable<KeyType>::search(const KeyType &k) const {
   // TODO Binary Search
-  SSTableNode<KeyType> *ans = nullptr;
-  for (auto i : table) {
-    if (i.key == k) {
-      ans = &i;
+  const SSTableNode<KeyType> *ans = nullptr;
+  for (int i=0;i<table.size();++i) {
+    if (table[i].key == k) {
+      ans=&table[i];
     }
   }
   return ans;

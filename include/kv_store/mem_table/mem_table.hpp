@@ -142,15 +142,18 @@ MemTable<KeyType, ValType>::write(const std::string &filepath) const {
     fout << bout;
     v[j].key = i->key;
 
+
     fout.seekp(VOffset);
     bout << i->val;
-    VOffset += bout.size();
     v[j].vlen = bout.size();
     v[j].offset = VOffset;
+    VOffset += bout.size();
     fout << bout;
+
+
   }
   fout.close();
-  return SSTable<KeyType>(id(), v, filter());
+  return SSTable<KeyType>(id(), v, filter(), filepath);
 }
 template <typename KeyType, typename ValType>
 MemTable<KeyType, ValType>::~MemTable() {
