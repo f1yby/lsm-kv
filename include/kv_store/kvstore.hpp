@@ -69,7 +69,7 @@ template <typename KeyType, typename ValType>
 void KeyValStore<KeyType, ValType>::put(const KeyType &key,
                                         const ValType &val) {
   if (!mem_table->insert(key, val)) {
-    sst_mgr.insert(mem_table->write("1.txt"));
+    sst_mgr.insert(mem_table->write(dir));
     auto new_table = new MemTable<KeyType, ValType>(mem_table->id());
     delete mem_table;
     mem_table = new_table;
@@ -78,7 +78,11 @@ void KeyValStore<KeyType, ValType>::put(const KeyType &key,
 template <typename KeyType, typename ValType>
 void KeyValStore<KeyType, ValType>::scan(
     KeyType key1, KeyType key2,
-    std::list<std::pair<KeyType, ValType>> &list) const {}
+    std::list<std::pair<KeyType, ValType>> &list) const {
+  std::list<std::pair<KeyType, ValType>> ml;
+  mem_table->scan(key1, key2, ml);
+  sst_mgr.scan(ml);
+}
 template <typename KeyType, typename ValType>
 KeyValStore<KeyType, ValType>::~KeyValStore() {
   delete mem_table;

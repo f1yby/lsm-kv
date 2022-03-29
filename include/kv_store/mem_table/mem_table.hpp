@@ -13,8 +13,8 @@
 #include <string>
 #include <utility>
 namespace kvs {
-template <typename KeyType> class SSTableNode;
-template <typename KeyType> class SSTable;
+template <typename KeyType, typename ValType> class SSTableNode;
+template <typename KeyType, typename ValType> class SSTable;
 
 template <typename KeyType, typename ValType> class MemTable {
 private:
@@ -47,7 +47,8 @@ public:
   ValType *search(const KeyType &key) const;
   std::list<node_type *> scan(const KeyType &start, const KeyType &end) const;
 
-  [[nodiscard]] SSTable<KeyType> write(const std::string &filepath) const;
+  [[nodiscard]] SSTable<KeyType, ValType>
+  write(const std::string &filepath) const;
 };
 
 template <typename KeyType, typename ValType>
@@ -114,11 +115,8 @@ const KeyType *MemTable<KeyType, ValType>::key_max() const {
 }
 
 template <typename KeyType, typename ValType>
-SSTable<KeyType>
+SSTable<KeyType, ValType>
 MemTable<KeyType, ValType>::write(const std::string &filepath) const {
-
-  //  uint64_t timestamp =
-  //      std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
   std::ofstream fout;
   fout.open(filepath);
 
@@ -132,7 +130,7 @@ MemTable<KeyType, ValType>::write(const std::string &filepath) const {
 
   fout << bout;
 
-  std::vector<SSTableNode<KeyType>> v(skip_list.size());
+  std::vector<SSTableNode<KeyType, ValType>> v(skip_list.size());
   int j = 0;
   for (auto i = skip_list.begin(); i != skip_list.end();
        i = i->forwards[0], ++j) {
@@ -142,18 +140,15 @@ MemTable<KeyType, ValType>::write(const std::string &filepath) const {
     fout << bout;
     v[j].key = i->key;
 
-
     fout.seekp(VOffset);
     bout << i->val;
     v[j].vlen = bout.size();
     v[j].offset = VOffset;
     VOffset += bout.size();
     fout << bout;
-
-
   }
   fout.close();
-  return SSTable<KeyType>(id(), v, filter(), filepath);
+  return SSTable<KeyType, ValType>(id(), v, filter(), filepath);
 }
 template <typename KeyType, typename ValType>
 MemTable<KeyType, ValType>::~MemTable() {
