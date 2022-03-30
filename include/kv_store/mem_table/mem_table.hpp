@@ -56,11 +56,11 @@ public:
 };
 
 template <typename KeyType, typename ValType>
-MemTable<KeyType, ValType>::MemTable(uint64_t i, uint32_t d,
+MemTable<KeyType, ValType>::MemTable(uint64_t id, uint32_t dumplimit,
                                      uint32_t key_size_max)
-    : dump(d), data_size(0), skip_list(2), _id(i),
-      _filter(10240 / 2, key_size_max), key_size_max(key_size_max),
-      minkey(nullptr), maxkey(nullptr) {
+    : skip_list(2), _filter(10240 / 2, key_size_max), data_size(0),
+      key_size_max(key_size_max), dump(dumplimit), minkey(nullptr),
+      maxkey(nullptr), _id(id) {
   data_size += 32; // header size
   ++table_cnt;
 }

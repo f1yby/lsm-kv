@@ -42,9 +42,9 @@ public:
     _pool.resize(_round, 0);
   }
   std::vector<std::size_t> *operator()(const T &key) {
-    std::uint32_t out[4];
+    std::uint32_t out[4] = {0};
     MurmurHash3_x64_128(&key, sizeof(key), 0, out);
-    for (int i = 0; i < _round; ++i) {
+    for (uint32_t i = 0; i < _round; ++i) {
       _pool[i] = out[i];
     }
     return &_pool;

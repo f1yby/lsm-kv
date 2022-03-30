@@ -42,6 +42,7 @@ public:
   void scan(KeyType key1, KeyType key2,
             std::list<std::pair<KeyType, ValType>> &list);
 };
+
 template <typename KeyType, typename ValType>
 SSTMgr<KeyType, ValType>::SSTMgr() : data(1) {}
 template <typename KeyType, typename ValType>

@@ -37,7 +37,7 @@ bio::bitstream &operator<<(bio::bitstream &b, const BloomFilter<FT, FH> &f) {
 }
 template <typename T, typename H>
 BloomFilter<T, H>::BloomFilter(const BloomFilter &b)
-    : _hash(new H(*b._hash)), _m(b._m), _data(b._data) {}
+    : _hash(new H(*b._hash)), _data(b._data), _m(b._m) {}
 template <typename T, typename H> BloomFilter<T, H>::~BloomFilter() {
   delete _hash;
 }
@@ -59,7 +59,7 @@ bool BloomFilter<T, H>::check(const T &key) const {
 }
 template <typename T, typename H>
 BloomFilter<T, H>::BloomFilter(std::size_t m, std::size_t s)
-    : _data(std::vector<std::uint16_t>()), _hash(new H(s)), _m(m) {
+    : _hash(new H(s)), _data(std::vector<std::uint16_t>()), _m(m) {
   _data.resize(m, 0);
 }
 template <typename T, typename H>

@@ -24,7 +24,8 @@ public:
    * @param dir Directory to MemTable Root
    */
   explicit KeyValStore(std::string dir, std::size_t m = 10240)
-      : dir(std::move(dir)), mem_table(new MemTable<KeyType, ValType>(0)) {}
+      : dir(std::move(dir)), mem_table(new MemTable<KeyType, ValType>(0)),
+        sst_mgr(dir, m) {}
   KeyValStore() = delete;
   KeyValStore(const KeyValStore &) = delete;
   KeyValStore &operator=(const KeyValStore &) = delete;
@@ -84,6 +85,7 @@ void KeyValStore<KeyType, ValType>::scan(
   std::list<std::pair<KeyType, ValType>> ml;
   mem_table->scan(key1, key2, ml);
   sst_mgr.scan(ml);
+  list = ml;
 }
 template <typename KeyType, typename ValType>
 KeyValStore<KeyType, ValType>::~KeyValStore() {

@@ -82,7 +82,7 @@ inline bitstream &operator<<(bitstream &b, const std::string &s) {
   return b;
 }
 inline size_t bitstream::rdnbyte(std::istream &i, size_t n) {
-  int j = 0;
+  size_t j = 0;
   uint8_t b;
   for (; j < n && !i.eof(); ++j) {
     i >> b;
