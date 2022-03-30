@@ -116,38 +116,15 @@ const KeyType *MemTable<KeyType, ValType>::key_max() const {
 
 template <typename KeyType, typename ValType>
 SSTable<KeyType, ValType>
+
 MemTable<KeyType, ValType>::write(const std::string &filepath) const {
-  std::ofstream fout;
-  fout.open(filepath);
-
-  bio::bitstream bout;
-  bout //<< timestamp
-      << _id << skip_list.size() << (minkey != nullptr ? *minkey : KeyType())
-      << (maxkey != nullptr ? *maxkey : KeyType()) << _filter;
-  uint32_t KOffset = bout.size();
-  uint32_t VOffset =
-      KOffset + (key_size_max + sizeof(KOffset)) * skip_list.size();
-
-  fout << bout;
-
-  std::vector<SSTableNode<KeyType, ValType>> v(skip_list.size());
+  std::vector<std::pair<KeyType, ValType>> v(skip_list.size());
   int j = 0;
   for (auto i = skip_list.begin(); i != skip_list.end();
        i = i->forwards[0], ++j) {
-    fout.seekp(KOffset);
-    bout << i->key << VOffset;
-    KOffset += bout.size();
-    fout << bout;
-    v[j].key = i->key;
-
-    fout.seekp(VOffset);
-    bout << i->val;
-    v[j].vlen = bout.size();
-    v[j].offset = VOffset;
-    VOffset += bout.size();
-    fout << bout;
+    v[j].first = i->key;
+    v[j].second = i->val;
   }
-  fout.close();
   return SSTable<KeyType, ValType>(id(), v, filter(), filepath);
 }
 template <typename KeyType, typename ValType>

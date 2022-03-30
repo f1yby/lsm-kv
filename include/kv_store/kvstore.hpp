@@ -70,9 +70,7 @@ void KeyValStore<KeyType, ValType>::put(const KeyType &key,
                                         const ValType &val) {
   if (!mem_table->insert(key, val)) {
     sst_mgr.insert(mem_table->write(dir));
-    auto new_table = new MemTable<KeyType, ValType>(mem_table->id());
-    delete mem_table;
-    mem_table = new_table;
+    dump(dir);
   }
 }
 template <typename KeyType, typename ValType>
@@ -106,8 +104,9 @@ KeyValStore<KeyType, ValType>::get(const KeyType &key) const {
 }
 template <typename KeyType, typename ValType>
 void KeyValStore<KeyType, ValType>::dump(const std::string &filepath) {
-  sst_mgr.insert(mem_table->write("1.txt"));
+  sst_mgr.insert(mem_table->write(std::string().append(filepath)));
   auto new_table = new MemTable<KeyType, ValType>(mem_table->id() + 1);
+  delete mem_table;
   mem_table = new_table;
 }
 } // namespace kvs

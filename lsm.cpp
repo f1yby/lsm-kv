@@ -2,6 +2,7 @@
 #include "kv_store/mem_table/mem_table.hpp"
 #include "kv_store/ss_table/ss_table.hpp"
 #include "kv_store/ss_table/sst_mgr.hpp"
+#include "utils.h"
 #include <string>
 using namespace std;
 
@@ -31,5 +32,12 @@ int main() {
   kvst.put(1, "world");
   // get form memory
   std::cout << *kvst.get(1) << std::endl;
+  // Utils
+  std::vector<std::string> v;
+  utils::scanDir(".", v);
+  for (const auto &i : v) {
+    std::cout << i << std::endl;
+  }
+  utils::rmfile("1.txt");
   return 0;
 }
