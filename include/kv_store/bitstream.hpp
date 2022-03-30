@@ -30,24 +30,24 @@ template <typename T> uint32_t bsize(T x) {
   b << x;
   return b.size();
 }
-std::ostream &operator<<(std::ostream &o, bitstream &b) {
+inline std::ostream &operator<<(std::ostream &o, bitstream &b) {
   for (auto i : b.buffer) {
     o << (char)i;
   }
   b.buffer.clear();
   return o;
 }
-bitstream &operator<<(bitstream &b, uint8_t uint8) {
+inline bitstream &operator<<(bitstream &b, uint8_t uint8) {
   b.buffer.push_back(uint8);
   return b;
 }
-bitstream &operator<<(bitstream &b, const uint16_t uint16) {
+inline bitstream &operator<<(bitstream &b, const uint16_t uint16) {
   auto *c = (uint8_t *)&uint16;
   b.buffer.push_back(c[0]);
   b.buffer.push_back(c[1]);
   return b;
 }
-bitstream &operator<<(bitstream &b, const uint32_t uint32) {
+inline bitstream &operator<<(bitstream &b, const uint32_t uint32) {
   auto *c = (uint8_t *)&uint32;
   b.buffer.push_back(c[0]);
   b.buffer.push_back(c[1]);
@@ -55,7 +55,7 @@ bitstream &operator<<(bitstream &b, const uint32_t uint32) {
   b.buffer.push_back(c[3]);
   return b;
 }
-bitstream &operator<<(bitstream &b, uint64_t uint64) {
+inline bitstream &operator<<(bitstream &b, uint64_t uint64) {
   auto *c = (uint8_t *)&uint64;
   b.buffer.push_back(c[0]);
   b.buffer.push_back(c[1]);
@@ -67,7 +67,7 @@ bitstream &operator<<(bitstream &b, uint64_t uint64) {
   b.buffer.push_back(c[7]);
   return b;
 }
-bitstream &operator<<(bitstream &b, int32_t int32) {
+inline bitstream &operator<<(bitstream &b, int32_t int32) {
   auto *c = (uint8_t *)&int32;
   b.buffer.push_back(c[0]);
   b.buffer.push_back(c[1]);
@@ -75,13 +75,13 @@ bitstream &operator<<(bitstream &b, int32_t int32) {
   b.buffer.push_back(c[3]);
   return b;
 }
-bitstream &operator<<(bitstream &b, const std::string &s) {
+inline bitstream &operator<<(bitstream &b, const std::string &s) {
   for (auto i : s) {
     b.buffer.push_back(i);
   }
   return b;
 }
-size_t bitstream::rdnbyte(std::istream &i, size_t n) {
+inline size_t bitstream::rdnbyte(std::istream &i, size_t n) {
   int j = 0;
   uint8_t b;
   for (; j < n && !i.eof(); ++j) {
@@ -90,7 +90,7 @@ size_t bitstream::rdnbyte(std::istream &i, size_t n) {
   }
   return j;
 }
-bitstream &bitstream::operator>>(std::string &s) {
+inline bitstream &bitstream::operator>>(std::string &s) {
   for (auto i : buffer) {
     s.push_back(i);
   }

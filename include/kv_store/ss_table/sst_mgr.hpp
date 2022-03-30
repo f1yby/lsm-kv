@@ -9,8 +9,8 @@
 #include <list>
 #include <utility>
 #include <vector>
-namespace {
-void RecursiveRMDir(const std::string &dir) {
+
+inline void RecursiveRMDir(const std::string &dir) {
   std::vector<std::string> point;
   utils::scanDir(dir, point);
   for (const auto &i : point) {
@@ -23,7 +23,6 @@ void RecursiveRMDir(const std::string &dir) {
     }
     utils::rmdir(std::string().append(dir).c_str());
   }
-}
 
 } // namespace
 namespace kvs {
@@ -49,7 +48,7 @@ template <typename KeyType, typename ValType>
 void SSTMgr<KeyType, ValType>::insert(const SSTable<KeyType, ValType> &sst) {
   // Todo Hierarchy
   data[0].push_back(sst);
-//  merge();
+  //  merge();
 }
 template <typename KeyType, typename ValType>
 std::unique_ptr<ValType>

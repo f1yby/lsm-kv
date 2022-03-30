@@ -18,8 +18,10 @@ public:
   BloomFilter(const BloomFilter &b);
   ~BloomFilter();
 
-  [[nodiscard]] std::vector<std::uint16_t> data()const;
-
+  [[nodiscard]] std::vector<std::uint16_t> data() const;
+  BloomFilter &operator=(const BloomFilter &) = delete;
+  BloomFilter &operator=(BloomFilter &&) = delete;
+  BloomFilter(BloomFilter &&) = delete;
   void insert(const T &key);
   bool check(const T &key) const;
   template <typename FT, typename FH>

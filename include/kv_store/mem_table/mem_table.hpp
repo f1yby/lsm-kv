@@ -35,6 +35,10 @@ private:
 public:
   explicit MemTable(uint64_t i = table_cnt, uint32_t d = 2 * 1024 * 1024,
                     uint32_t key_size_max = sizeof(KeyType));
+  MemTable(const MemTable &) = delete;
+  MemTable &operator=(const MemTable &) = delete;
+  MemTable(MemTable &&) = delete;
+  MemTable &operator=(MemTable &&) = delete;
   ~MemTable();
 
   filter_type filter() const;

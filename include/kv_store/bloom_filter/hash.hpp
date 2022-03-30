@@ -41,7 +41,6 @@ public:
     _rounds.resize(_round, 0);
     _pool.resize(_round, 0);
   }
-  MurMurHash(const MurMurHash &mh) = default;
   std::vector<std::size_t> *operator()(const T &key) {
     std::uint32_t out[4];
     MurmurHash3_x64_128(&key, sizeof(key), 0, out);

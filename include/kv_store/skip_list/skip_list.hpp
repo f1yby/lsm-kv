@@ -49,7 +49,10 @@ public:
    * @param p the probability to goes up a level when insert a key-val
    */
   explicit SkipList(double p);
-  SkipList(const SkipList &s);
+  SkipList(const SkipList &) = delete;
+  SkipList &operator=(const SkipList &) = delete;
+  SkipList(SkipList &&) = delete;
+  SkipList &operator=(SkipList &&) = delete;
   ~SkipList();
 
   void insert(KeyType key, ValType value);
@@ -258,8 +261,6 @@ template <typename KeyType, typename ValType>
 const SKNode<KeyType, ValType> *SkipList<KeyType, ValType>::end() const {
   return nil;
 }
-template <typename KeyType, typename ValType>
-SkipList<KeyType, ValType>::SkipList(const SkipList &) {}
 template <typename KeyType, typename ValType>
 inline SKNode<KeyType, ValType>::SKNode(KeyType _key, ValType _val,
                                         SKNodeType _type, int lvl)

@@ -34,7 +34,6 @@ public:
     return SSTable<KeyType, ValType>(_id, (table.begin(), table.end()), filter,
                                      filepath, key_size_max);
   }
-  ~SSNodePool() = default;
 };
 template <typename KeyType, typename ValType>
 SSNodePool<KeyType, ValType>::SSNodePool(uint64_t id, uint32_t key_size_max)
@@ -51,7 +50,6 @@ public:
   SSTable(uint64_t id, const std::vector<std::pair<KeyType, ValType>> &data,
           const BloomFilter<KeyType> &filter, std::string fp = std::string(),
           uint32_t key_size_max = sizeof(KeyType));
-  ~SSTable() = default;
 
   [[nodiscard]] uint64_t id() const;
   bool check(const KeyType &k) const;
