@@ -235,7 +235,7 @@ inline SkipList<KeyType, ValType>::~SkipList() {
 }
 template <typename KeyType, typename ValType>
 inline SkipList<KeyType, ValType>::SkipList(double p)
-    : node_cnt(0), p(p), lvl(INIT_LEVEL) {
+    : p(p), node_cnt(0), lvl(INIT_LEVEL) {
   nil = new SKNode<KeyType, ValType>(KeyType(), ValType(), SKNodeType::END,
                                      MAX_LEVEL);
   head = new SKNode<KeyType, ValType>(KeyType(), ValType(), SKNodeType::HEAD,

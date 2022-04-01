@@ -39,5 +39,7 @@ int main() {
     std::cout << i << std::endl;
   }
   utils::rmfile("1.txt");
+  utils::scanDir("./CMakeFiles", v);
+  RecursiveRMDir("./CMakeFiles");
   return 0;
 }

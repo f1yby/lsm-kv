@@ -11,20 +11,17 @@
 #include <vector>
 
 inline void RecursiveRMDir(const std::string &dir) {
-  std::vector<std::string> point;
-  utils::scanDir(dir, point);
-  for (const auto &i : point) {
-    std::vector<std::string> dp;
-    utils::scanDir(dir, dp);
-    for (const auto &j : dp) {
-      auto fp =
-          std::string().append(dir).append("/").append(i).append("/").append(j);
-      utils::rmfile(fp.c_str());
-    }
-    utils::rmdir(std::string().append(dir).c_str());
-  }
+  std::vector<std::string> points;
+  utils::scanDir(dir, points);
+  for (const auto &i : points) {
 
-} // namespace
+    auto fp = std::string().append(dir).append("/").append(i);
+    if (utils::rmfile(fp.c_str())) {
+      RecursiveRMDir(fp);
+    }
+  }
+  utils::rmdir(dir.c_str());
+}
 namespace kvs {
 template <typename KeyType, typename ValType> class SSTMgr {
 private:

@@ -1,5 +1,6 @@
 #ifndef KV_STORE_SS_TABLE_INDEX
 #define KV_STORE_SS_TABLE_INDEX
+#include <cstdint>
 #include <utility>
 
 #include "kv_store/bloom_filter/bloom_filter.hpp"
@@ -108,8 +109,8 @@ KeyType SSTable<KeyType, ValType>::back() const {
 
 template <typename KeyType, typename ValType>
 bool SSTable<KeyType, ValType>::cover(const SSTable *st) const {
-  return front() <= st->front() && back() >= st->front() ||
-         front() <= st->back() && back() >= st->back();
+  return (front() <= st->front() && back() >= st->front()) ||
+         (front() <= st->back() && back() >= st->back());
 }
 template <typename KeyType, typename ValType>
 SSTableNode<KeyType, ValType>
@@ -138,7 +139,7 @@ SSTable<KeyType, ValType>::SSTable(
 
   std::vector<SSTableNode<KeyType, ValType>> v(data.size());
   int j = 0;
-  for (int i = 0; i < data.size(); ++i) {
+  for (uint32_t i = 0; i < data.size(); ++i) {
     fout.seekp(KOffset);
     bout << data[i].first << VOffset;
     KOffset += bout.size();

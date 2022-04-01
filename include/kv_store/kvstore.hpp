@@ -23,9 +23,8 @@ public:
    *
    * @param dir Directory to MemTable Root
    */
-  explicit KeyValStore(std::string dir, std::size_t m = 10240)
-      : dir(std::move(dir)), mem_table(new MemTable<KeyType, ValType>(0)),
-        sst_mgr(dir, m) {}
+  explicit KeyValStore(std::string dir)
+      : dir(std::move(dir)), mem_table(new MemTable<KeyType, ValType>(0)) {}
   KeyValStore() = delete;
   KeyValStore(const KeyValStore &) = delete;
   KeyValStore &operator=(const KeyValStore &) = delete;
