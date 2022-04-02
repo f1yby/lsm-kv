@@ -155,7 +155,7 @@ template <typename KeyType, typename ValType>
 inline void SkipList<KeyType, ValType>::remove(KeyType key) {
   auto nodes = new SKNode<KeyType, ValType> *[MAX_LEVEL];
   auto node = head;
-  for (int curr_lvl = MAX_LEVEL; curr_lvl >= 0; --curr_lvl) {
+  for (int curr_lvl = MAX_LEVEL - 1; curr_lvl >= 0; --curr_lvl) {
     while (node->forwards[curr_lvl]->type != SKNodeType::END &&
            node->forwards[curr_lvl]->key < key) {
       node = node->forwards[curr_lvl];
