@@ -64,8 +64,9 @@ public:
    * @param key2
    * @param list
    */
-  void scan(KeyType key1, KeyType key2,
+  void scan(const KeyType &key1, const KeyType &key2,
             std::list<std::pair<KeyType, ValType>> &list) const;
+  void delmem(const KeyType &key) { mem_table->remove(key); }
 
   void dump(const std::string &filepath);
 };
@@ -79,11 +80,10 @@ void KeyValStore<KeyType, ValType>::put(const KeyType &key,
 }
 template <typename KeyType, typename ValType>
 void KeyValStore<KeyType, ValType>::scan(
-    KeyType key1, KeyType key2,
+    const KeyType &key1, const KeyType &key2,
     std::list<std::pair<KeyType, ValType>> &list) const {
-  std::list<std::pair<KeyType, ValType>> ml;
-  mem_table->scan(key1, key2, ml);
-  sst_mgr.scan(ml);
+  std::list<std::pair<KeyType, ValType>> ml = mem_table->scan(key1, key2);
+  // sst_mgr.scan(ml);
   list = ml;
 }
 template <typename KeyType, typename ValType>

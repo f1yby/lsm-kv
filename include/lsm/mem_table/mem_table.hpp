@@ -49,10 +49,12 @@ public:
 
   bool insert(const KeyType &key, const ValType &val);
   ValType *search(const KeyType &key) const;
-  std::list<node_type *> scan(const KeyType &start, const KeyType &end) const;
+  std::list<std::pair<KeyType, ValType>> scan(const KeyType &start,
+                                              const KeyType &end) const;
 
   [[nodiscard]] SSTable<KeyType, ValType>
   write(const std::string &filepath) const;
+  void remove(const KeyType &key) { skip_list.remove(key); }
 };
 
 template <typename KeyType, typename ValType>
@@ -141,10 +143,14 @@ uint64_t MemTable<KeyType, ValType>::size() const {
   return skip_list.size();
 }
 template <typename KeyType, typename ValType>
-std::list<SKNode<KeyType, ValType> *>
+std::list<std::pair<KeyType, ValType>>
 MemTable<KeyType, ValType>::scan(const KeyType &start,
                                  const KeyType &end) const {
-  return skip_list.scan(start, end);
+  std::list<std::pair<KeyType, ValType>> ans;
+  for (auto i : skip_list.scan(start, end)) {
+    ans.push_back(std::pair<KeyType, ValType>(i->key, i->val));
+  }
+  return ans;
 }
 template <typename KeyType, typename ValType>
 [[maybe_unused]] uint64_t MemTable<KeyType, ValType>::id() const {
