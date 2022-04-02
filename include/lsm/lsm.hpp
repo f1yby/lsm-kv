@@ -1,10 +1,10 @@
 #ifndef KV_STORE_KVSTORE_HPP
 #define KV_STORE_KVSTORE_HPP
-#include "kv_store/bloom_filter/bloom_filter.hpp"
-#include "kv_store/mem_table/mem_table.hpp"
-#include "kv_store/skip_list/skip_list.hpp"
-#include "kv_store/ss_table/ss_table.hpp"
-#include "kv_store/ss_table/sst_mgr.hpp"
+#include "bloom_filter/bloom_filter.hpp"
+#include "mem_table/mem_table.hpp"
+#include "skip_list/skip_list.hpp"
+#include "ss_table/ss_table.hpp"
+#include "ss_table/sst_mgr.hpp"
 #include <cstddef>
 #include <list>
 #include <string>

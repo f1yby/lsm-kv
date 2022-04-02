@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <utility>
 
-#include "kv_store/bloom_filter/bloom_filter.hpp"
-#include "kv_store/mem_table/mem_table.hpp"
+#include "../bloom_filter/bloom_filter.hpp"
+#include "../mem_table/mem_table.hpp"
 
 namespace kvs {
 template <typename KeyType, typename ValType> class SSTable;
@@ -17,6 +17,7 @@ public:
   SSTableNode(const KeyType &k, const uint32_t &o, const uint32_t &l);
   SSTableNode();
 };
+
 template <typename KeyType, typename ValType> class SSNodePool {
 private:
   uint64_t _id;

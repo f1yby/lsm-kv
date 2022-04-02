@@ -4,8 +4,10 @@
 
 #ifndef LSM_KV_SST_MGR_HPP
 #define LSM_KV_SST_MGR_HPP
+#include "../mem_table/mem_table.hpp"
 #include "ss_table.hpp"
 #include "utils.h"
+#include <cstdint>
 #include <list>
 #include <utility>
 #include <vector>
@@ -27,7 +29,7 @@ template <typename KeyType, typename ValType> class SSTMgr {
 private:
   std::vector<std::list<SSTable<KeyType, ValType>>> data;
   const std::string dir;
-  void merge(uint32_t lvl);
+  void merge();
   void mergeN(std::vector<SSTable<KeyType, ValType>> &v);
 
 public:
@@ -46,7 +48,7 @@ template <typename KeyType, typename ValType>
 void SSTMgr<KeyType, ValType>::insert(const SSTable<KeyType, ValType> &sst) {
   // Todo Hierarchy
   data[0].push_back(sst);
-  //  merge();
+  merge();
 }
 template <typename KeyType, typename ValType>
 std::unique_ptr<ValType>
@@ -79,8 +81,13 @@ void SSTMgr<KeyType, ValType>::scan(
   }
 }
 template <typename KeyType, typename ValType>
-void SSTMgr<KeyType, ValType>::merge(uint32_t lvl) {
-  if (lvl == 0) {
+void SSTMgr<KeyType, ValType>::merge() {
+  for (uint32_t i = 0; i < data.size(); ++i) {
+    int size = data[i].size();
+    if (data[i].size() > i * 2 + 2) {
+      size = i * 2 + 2 - size;
+      std::vector<SSTableNode<KeyType, ValType>> v;
+    }
   }
 }
 template <typename KeyType, typename ValType>

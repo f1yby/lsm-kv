@@ -1,7 +1,7 @@
-#include "kv_store/kvstore.hpp"
-#include "kv_store/mem_table/mem_table.hpp"
-#include "kv_store/ss_table/ss_table.hpp"
-#include "kv_store/ss_table/sst_mgr.hpp"
+#include "lsm/lsm.hpp"
+#include "lsm/mem_table/mem_table.hpp"
+#include "lsm/ss_table/ss_table.hpp"
+#include "lsm/ss_table/sst_mgr.hpp"
 #include "utils.h"
 #include <string>
 using namespace std;
