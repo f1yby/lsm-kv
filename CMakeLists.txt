@@ -9,3 +9,6 @@ project(LSM_KV)
 add_executable(LSM_KV lsm.cpp)
 include_directories(include)
 include_directories(third_party)
+
+project(CORRECTNESS)
+add_executable(CORRECTNESS correctness.cc)
