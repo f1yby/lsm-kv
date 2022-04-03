@@ -2,6 +2,7 @@
 #include "lsm/mem_table/mem_table.hpp"
 #include "lsm/ss_table/ss_table.hpp"
 #include "lsm/ss_table/sst_mgr.hpp"
+#include "third_party/utils.h"
 #include "utils.h"
 #include <string>
 using namespace std;
@@ -11,8 +12,8 @@ int main() {
   table.insert(1, "hello");
   table.insert(2, "world");
   std::cout << *table.search(1) << std::endl;
-  for (auto i : table.scan(0, 3)) {
-    std::cout << i->val << std::endl;
+  for (const auto &i : table.scan(0, 3)) {
+    std::cout << i.second << std::endl;
   }
   kvs::SSTMgr<uint64_t, std::string> ssm;
   ssm.search(10);
@@ -33,13 +34,6 @@ int main() {
   // get form memory
   std::cout << *kvst.get(1) << std::endl;
   // Utils
-  std::vector<std::string> v;
-  utils::scanDir(".", v);
-  for (const auto &i : v) {
-    std::cout << i << std::endl;
-  }
   utils::rmfile("1.txt");
-  utils::scanDir("./CMakeFiles", v);
-  RecursiveRMDir("./CMakeFiles");
   return 0;
 }

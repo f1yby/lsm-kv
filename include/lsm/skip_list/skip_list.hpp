@@ -171,6 +171,7 @@ inline void SkipList<KeyType, ValType>::remove(KeyType key) {
       nodes[i]->forwards[i] = nodes[i]->forwards[i]->forwards[i];
     }
     delete node;
+    --node_cnt;
   }
 }
 template <typename KeyType, typename ValType>

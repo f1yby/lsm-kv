@@ -12,8 +12,8 @@ public:
    * there. Please refer to the c++ filesystem library
    * (https://en.cppreference.com/w/cpp/filesystem).
    */
-  KVStoreAPI(const std::string &) {}
-  KVStoreAPI() {}
+  explicit KVStoreAPI(const std::string &) {}
+  KVStoreAPI() =delete;
 
   /**
    * Insert/Update the key-value pair.

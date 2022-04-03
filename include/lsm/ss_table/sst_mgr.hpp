@@ -38,8 +38,8 @@ public:
   void insert(const SSTable<KeyType, ValType> &sst);
   std::unique_ptr<ValType> search(const KeyType &k) const;
   void clear();
-  void scan(KeyType key1, KeyType key2,
-            std::list<std::pair<KeyType, ValType>> &list);
+  void scan(const KeyType &key1, const KeyType &key2,
+            std::list<std::pair<KeyType, ValType>> &list) const;
 };
 
 template <typename KeyType, typename ValType>
@@ -48,7 +48,7 @@ template <typename KeyType, typename ValType>
 void SSTMgr<KeyType, ValType>::insert(const SSTable<KeyType, ValType> &sst) {
   // Todo Hierarchy
   data[0].push_back(sst);
-  merge();
+  // merge();
 }
 template <typename KeyType, typename ValType>
 std::unique_ptr<ValType>
@@ -73,9 +73,10 @@ SSTMgr<KeyType, ValType>::SSTMgr(std::string dirpath)
     : dir(std::move(dirpath)) {}
 template <typename KeyType, typename ValType>
 void SSTMgr<KeyType, ValType>::scan(
-    KeyType key1, KeyType key2, std::list<std::pair<KeyType, ValType>> &list) {
+    const KeyType &key1, const KeyType &key2,
+    std::list<std::pair<KeyType, ValType>> &list) const {
   for (auto i : data) {
-    for (auto j : i) {
+    for (const SSTable<KeyType, ValType> &j : i) {
       j.scan(key1, key2, list);
     }
   }

@@ -55,32 +55,72 @@ public:
 
   [[nodiscard]] uint64_t id() const;
   bool check(const KeyType &k) const;
-  // const SSTableNode<KeyType, ValType> *search(const KeyType &k) const;
   KeyType front() const;
   KeyType back() const;
   [[nodiscard]] uint32_t size() const;
   bool cover(const SSTable *st) const;
+  std::unique_ptr<ValType> get(const SSTableNode<KeyType, ValType> &n) const {
+    std::ifstream fin;
+    fin.open(filepath);
+    bio::bitstream bin;
+    fin.seekg(n.offset);
+    bin.rdnbyte(fin, n.vlen);
+    std::unique_ptr<ValType> ans(new ValType());
+    bin >> *ans;
+    return ans;
+  }
   std::unique_ptr<ValType> search(const KeyType &key) {
     if ((key < front() || back() < key) && !check(key)) {
       return std::unique_ptr<ValType>(nullptr);
     }
     for (SSTableNode i : table) {
       if (i.key == key) {
-        std::ifstream fin;
-        fin.open(filepath);
-        bio::bitstream bin;
-        fin.seekg(i.offset);
-        bin.rdnbyte(fin, i.vlen);
-        std::unique_ptr<ValType> ans(new ValType());
-        bin >> *ans;
-        return ans;
+        return get(i);
       }
     }
     return std::unique_ptr<ValType>(nullptr);
   }
   SSTableNode<KeyType, ValType> operator[](uint32_t i);
-  void scan(KeyType key1, KeyType key2,
-            std::list<std::pair<KeyType, ValType>> &list);
+  void scan(const KeyType &key1, const KeyType &key2,
+            std::list<std::pair<KeyType, ValType>> &list) const {
+    if (!(key1 > table.back().key || key2 < table.front().key)) {
+      // TODO Binary Search
+      uint32_t start = 0;
+      uint32_t end = table.size() - 1;
+      while (table[start].key < key1) {
+        ++start;
+      }
+      while (table[end].key > key2) {
+        --end;
+      }
+      auto j = list.begin();
+      while (start <= end) {
+        if (j == list.end() || table[start].key < j->first) {
+          j = list.insert(j, std::pair<KeyType, ValType>(table[start].key,
+                                                         *get(table[start])));
+          ++j;
+          ++start;
+        } else if(table[start].key==j->first) {
+          ++start;
+          ++j;
+        }else{
+          ++j;
+        }
+
+        //        auto jold = j++;
+        //        if (table[i].key > jold->first &&
+        //            (j == list.end() || table[i].key > j->first)) {
+        //          j = list.insert(
+        //              j, std::pair<KeyType, ValType>(table[i].key,
+        //              *get(table[i])));
+        //        } else if (table[i].key >= jold->first) {
+        //        } else {
+        //          ++i;
+        //          j = jold;
+        //        }
+      }
+    }
+  }
 };
 
 template <typename KeyType, typename ValType>
@@ -139,20 +179,22 @@ SSTable<KeyType, ValType>::SSTable(
   fout << bout;
 
   std::vector<SSTableNode<KeyType, ValType>> v(data.size());
-  int j = 0;
   for (uint32_t i = 0; i < data.size(); ++i) {
     fout.seekp(KOffset);
     bout << data[i].first << VOffset;
     KOffset += bout.size();
     fout << bout;
-    v[j].key = data[i].first;
-
+    v[i].key = data[i].first;
+    // bad but quick
     fout.seekp(VOffset);
-    bout << data[i].second;
-    v[j].vlen = bout.size();
-    v[j].offset = VOffset;
+    //    bout << data[i].second;
+    fout << data[i].second;
+    v[i].vlen = data[i].second.size();
+    v[i].offset = VOffset;
     VOffset += bout.size();
-    fout << bout;
+    //    v[j].vlen = bout.size();
+    //    v[j].offset = VOffset;
+    //    VOffset += bout.size();
   }
   fout.close();
   table = v;

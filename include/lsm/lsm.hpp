@@ -23,8 +23,10 @@ public:
    *
    * @param dir Directory to MemTable Root
    */
-  explicit KeyValStore(std::string dir)
-      : dir(std::move(dir)), mem_table(new MemTable<KeyType, ValType>(0)) {}
+  explicit KeyValStore(const std::string &dir)
+      : dir(dir), mem_table(new MemTable<KeyType, ValType>(0)) {
+    utils::mkdir(dir.c_str());
+  }
   KeyValStore() = delete;
   KeyValStore(const KeyValStore &) = delete;
   KeyValStore &operator=(const KeyValStore &) = delete;
@@ -74,8 +76,8 @@ template <typename KeyType, typename ValType>
 void KeyValStore<KeyType, ValType>::put(const KeyType &key,
                                         const ValType &val) {
   if (!mem_table->insert(key, val)) {
-    sst_mgr.insert(mem_table->write(dir));
-    dump(dir);
+    dump(dir + '/' + std::to_string(mem_table->id()) + ".sst");
+    mem_table->insert(key, val);
   }
 }
 template <typename KeyType, typename ValType>
@@ -83,12 +85,13 @@ void KeyValStore<KeyType, ValType>::scan(
     const KeyType &key1, const KeyType &key2,
     std::list<std::pair<KeyType, ValType>> &list) const {
   std::list<std::pair<KeyType, ValType>> ml = mem_table->scan(key1, key2);
-  // sst_mgr.scan(ml);
+  sst_mgr.scan(key1, key2, ml);
   list = ml;
 }
 template <typename KeyType, typename ValType>
 KeyValStore<KeyType, ValType>::~KeyValStore() {
   delete mem_table;
+  RecursiveRMDir(dir);
 }
 template <typename KeyType, typename ValType>
 void KeyValStore<KeyType, ValType>::reset() {
