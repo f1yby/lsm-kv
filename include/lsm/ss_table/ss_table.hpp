@@ -106,18 +106,6 @@ public:
         }else{
           ++j;
         }
-
-        //        auto jold = j++;
-        //        if (table[i].key > jold->first &&
-        //            (j == list.end() || table[i].key > j->first)) {
-        //          j = list.insert(
-        //              j, std::pair<KeyType, ValType>(table[i].key,
-        //              *get(table[i])));
-        //        } else if (table[i].key >= jold->first) {
-        //        } else {
-        //          ++i;
-        //          j = jold;
-        //        }
       }
     }
   }
