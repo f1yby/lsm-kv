@@ -25,94 +25,93 @@ inline void RecursiveRMDir(const std::string &dir) {
   utils::rmdir(dir.c_str());
 }
 namespace kvs {
-template <typename KeyType, typename ValType> class SSTMgr {
+class SSTMgr {
 private:
-  std::vector<std::list<SSTable<KeyType, ValType>>> data;
+  std::vector<std::list<SSTable>> data;
   const std::string dir;
   void merge();
-  void mergeN(std::vector<SSTable<KeyType, ValType>> &v);
+//  void mergeN(std::vector<SSTable<uint64_t , std::string>> &v);
 
 public:
   SSTMgr();
   explicit SSTMgr(std::string dirpath);
-  void insert(const SSTable<KeyType, ValType> &sst);
-  std::unique_ptr<ValType> search(const KeyType &k) const;
+  void insert(const SSTable &sst);
+  [[nodiscard]] std::unique_ptr<std::string> search(const uint64_t &k) const;
   void clear();
-  void scan(const KeyType &key1, const KeyType &key2,
-            std::list<std::pair<KeyType, ValType>> &list) const;
+  void scan(const uint64_t &key1, const uint64_t &key2,
+            std::list<std::pair<uint64_t , std::string>> &list) const;
 };
 
-template <typename KeyType, typename ValType>
-SSTMgr<KeyType, ValType>::SSTMgr() : data(1) {}
-template <typename KeyType, typename ValType>
-void SSTMgr<KeyType, ValType>::insert(const SSTable<KeyType, ValType> &sst) {
+
+SSTMgr::SSTMgr() : data(1) {}
+
+void SSTMgr::insert(const SSTable &sst) {
   // Todo Hierarchy
   data[0].push_back(sst);
   // merge();
 }
-template <typename KeyType, typename ValType>
-std::unique_ptr<ValType>
-SSTMgr<KeyType, ValType>::search(const KeyType &k) const {
-  for (auto j : data) {
+
+std::unique_ptr<std::string>
+SSTMgr::search(const uint64_t &k) const {
+  for (const auto& j : data) {
     for (SSTable i : j) {
-      std::unique_ptr<ValType> ans = i.search(k);
+      std::unique_ptr<std::string> ans = i.search(k);
       if (ans != nullptr) {
         return ans;
       }
     }
   }
-  return std::unique_ptr<ValType>(nullptr);
+  return {nullptr};
 }
-template <typename KeyType, typename ValType>
-void SSTMgr<KeyType, ValType>::clear() {
+
+void SSTMgr::clear() {
   data.clear();
   RecursiveRMDir(dir);
 }
-template <typename KeyType, typename ValType>
-SSTMgr<KeyType, ValType>::SSTMgr(std::string dirpath)
+
+SSTMgr::SSTMgr(std::string dirpath)
     : dir(std::move(dirpath)) {}
-template <typename KeyType, typename ValType>
-void SSTMgr<KeyType, ValType>::scan(
-    const KeyType &key1, const KeyType &key2,
-    std::list<std::pair<KeyType, ValType>> &list) const {
-  for (auto i : data) {
-    for (const SSTable<KeyType, ValType> &j : i) {
+
+void SSTMgr::scan(
+    const uint64_t &key1, const uint64_t &key2,
+    std::list<std::pair<uint64_t , std::string>> &list) const {
+  for (const auto& i : data) {
+    for (const auto &j : i) {
       j.scan(key1, key2, list);
     }
   }
 }
-template <typename KeyType, typename ValType>
-void SSTMgr<KeyType, ValType>::merge() {
+
+void SSTMgr::merge() {
   for (uint32_t i = 0; i < data.size(); ++i) {
-    int size = data[i].size();
+    uint64_t size = data[i].size();
     if (data[i].size() > i * 2 + 2) {
       size = i * 2 + 2 - size;
-      std::vector<SSTableNode<KeyType, ValType>> v;
+      std::vector<SSTableNode> v;
     }
   }
 }
-template <typename KeyType, typename ValType>
-void SSTMgr<KeyType, ValType>::mergeN(
-    std::vector<SSTable<KeyType, ValType>> &v) {
-  std::vector<uint32_t> indexs(0, v.size());
-  while (true) {
-    KeyType k = v[0][indexs[0]];
-    uint32_t iadd;
-    bool find = false;
-    for (int i = 0; i < indexs.size(); ++i) {
-      if (indexs[i] < v[i].size() && v[i][indexs[i]] < k) {
-        k = v[i][indexs[i]];
-        if (!find) {
-          find = true;
-        }
-        ++indexs[iadd];
-      }
-    }
-    if (!find) {
-      break;
-    }
-  }
-}
+//void SSTMgr::mergeN(
+//    std::vector<SSTable> &v) {
+//  std::vector<uint32_t> indexs(0, v.size());
+//  while (true) {
+//    uint64_t k = v[0][indexs[0]];
+//    uint32_t iadd;
+//    bool find = false;
+//    for (int i = 0; i < indexs.size(); ++i) {
+//      if (indexs[i] < v[i].size() && v[i][indexs[i]] < k) {
+//        k = v[i][indexs[i]];
+//        if (!find) {
+//          find = true;
+//        }
+//        ++indexs[iadd];
+//      }
+//    }
+//    if (!find) {
+//      break;
+//    }
+//  }
+//}
 
 } // namespace kvs
 #endif // LSM_KV_SST_MGR_HPP

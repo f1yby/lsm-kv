@@ -1,88 +1,89 @@
 #ifndef KV_STORE_SS_TABLE_INDEX
 #define KV_STORE_SS_TABLE_INDEX
 #include <cstdint>
+#include <fstream>
+#include <memory>
 #include <utility>
 
 #include "../bloom_filter/bloom_filter.hpp"
 #include "../mem_table/mem_table.hpp"
 
 namespace kvs {
-template <typename KeyType, typename ValType> class SSTable;
+class SSTable;
 
-template <typename KeyType, typename ValType> class SSTableNode {
+class SSTableNode {
 public:
-  KeyType key;
+  uint64_t key{};
   uint32_t offset = 0;
   uint32_t vlen = 0;
-  SSTableNode(const KeyType &k, const uint32_t &o, const uint32_t &l);
+  SSTableNode(const uint64_t &k, const uint32_t &o, const uint32_t &l);
   SSTableNode();
 };
+//
+// class SSNodePool {
+// private:
+//  uint64_t _id;
+//  std::list<std::pair<uint64_t, std::string>> table;
+//  BloomFilter<uint64_t> filter;
+//  enum { key_size_max = 8 };
+//  uint32_t data_size;
+//
+// public:
+//  explicit SSNodePool(uint64_t id);
+//  void insert(const std::pair<uint64_t, std::string> &kv) {
+//    table.push_back(kv);
+//    filter.insert(kv.first);
+//  }
+////  SSTable write(const std::string& filepath) {
+////    return SSTable(_id, (table.begin(), table.end()), filter, filepath);
+////  }
+//};
+// SSNodePool::SSNodePool(uint64_t id)
+//    : _id(id), table(), filter(10240 / 2, key_size_max), data_size(0){}
 
-template <typename KeyType, typename ValType> class SSNodePool {
-private:
-  uint64_t _id;
-  std::list<SSTableNode<KeyType, ValType>> table;
-  BloomFilter<KeyType> filter;
-  uint32_t key_size_max;
-  uint32_t data_size;
-
-public:
-  SSNodePool(uint64_t id, uint32_t key_size_max);
-  void insert(std::pair<KeyType, ValType> kv) {
-    table.push_back(kv);
-    filter.insert(kv.first);
-  }
-  SSTable<KeyType, ValType> write(std::string filepath) {
-    return SSTable<KeyType, ValType>(_id, (table.begin(), table.end()), filter,
-                                     filepath, key_size_max);
-  }
-};
-template <typename KeyType, typename ValType>
-SSNodePool<KeyType, ValType>::SSNodePool(uint64_t id, uint32_t key_size_max)
-    : _id(id), table(), filter(10240 / 2, key_size_max), data_size(0),
-      key_size_max(key_size_max) {}
-template <typename KeyType, typename ValType> class SSTable {
+class SSTable {
 private:
   const uint64_t _id;
-  std::vector<SSTableNode<KeyType, ValType>> table;
-  const BloomFilter<KeyType> filter;
+  std::vector<SSTableNode> table;
+  const BloomFilter<uint64_t> filter;
+  enum { key_size_max = 8 };
 
 public:
   std::string filepath;
-  SSTable(uint64_t id, const std::vector<std::pair<KeyType, ValType>> &data,
-          const BloomFilter<KeyType> &filter, std::string fp = std::string(),
-          uint32_t key_size_max = sizeof(KeyType));
+  SSTable(uint64_t id,
+          const std::vector<std::pair<uint64_t, std::string>> &data,
+          const BloomFilter<uint64_t> &filter, std::string fp = std::string());
 
   [[nodiscard]] uint64_t id() const;
-  bool check(const KeyType &k) const;
-  KeyType front() const;
-  KeyType back() const;
+  [[nodiscard]] bool check(const uint64_t &k) const;
+  [[nodiscard]] uint64_t front() const;
+  [[nodiscard]] uint64_t back() const;
   [[nodiscard]] uint32_t size() const;
   bool cover(const SSTable *st) const;
-  std::unique_ptr<ValType> get(const SSTableNode<KeyType, ValType> &n) const {
+  [[nodiscard]] std::unique_ptr<std::string> get(const SSTableNode &n) const {
     std::ifstream fin;
     fin.open(filepath);
     bio::bitstream bin;
     fin.seekg(n.offset);
     bin.rdnbyte(fin, n.vlen);
-    std::unique_ptr<ValType> ans(new ValType());
+    std::unique_ptr<std::string> ans(new std::string());
     bin >> *ans;
     return ans;
   }
-  std::unique_ptr<ValType> search(const KeyType &key) {
+  std::unique_ptr<std::string> search(const uint64_t &key) {
     if ((key < front() || back() < key) && !check(key)) {
-      return std::unique_ptr<ValType>(nullptr);
+      return {nullptr};
     }
-    for (SSTableNode i : table) {
+    for (auto i : table) {
       if (i.key == key) {
         return get(i);
       }
     }
-    return std::unique_ptr<ValType>(nullptr);
+    return {nullptr};
   }
-  SSTableNode<KeyType, ValType> operator[](uint32_t i);
-  void scan(const KeyType &key1, const KeyType &key2,
-            std::list<std::pair<KeyType, ValType>> &list) const {
+  SSTableNode operator[](uint32_t i);
+  void scan(const uint64_t &key1, const uint64_t &key2,
+            std::list<std::pair<uint64_t, std::string>> &list) const {
     if (!(key1 > table.back().key || key2 < table.front().key)) {
       // TODO Binary Search
       uint32_t start = 0;
@@ -96,14 +97,14 @@ public:
       auto j = list.begin();
       while (start <= end) {
         if (j == list.end() || table[start].key < j->first) {
-          j = list.insert(j, std::pair<KeyType, ValType>(table[start].key,
-                                                         *get(table[start])));
+          j = list.insert(j, std::pair<uint64_t, std::string>(
+                                 table[start].key, *get(table[start])));
           ++j;
           ++start;
-        } else if(table[start].key==j->first) {
+        } else if (table[start].key == j->first) {
           ++start;
           ++j;
-        }else{
+        } else {
           ++j;
         }
       }
@@ -111,49 +112,34 @@ public:
   }
 };
 
-template <typename KeyType, typename ValType>
-SSTableNode<KeyType, ValType>::SSTableNode(const KeyType &k, const uint32_t &o,
-                                           const uint32_t &l)
+SSTableNode::SSTableNode(const uint64_t &k, const uint32_t &o,
+                         const uint32_t &l)
     : key(k), offset(o), vlen(l) {}
-template <typename KeyType, typename ValType>
-SSTableNode<KeyType, ValType>::SSTableNode() : key{} {}
 
-template <typename KeyType, typename ValType>
-uint64_t SSTable<KeyType, ValType>::id() const {
-  return _id;
-}
-template <typename KeyType, typename ValType>
-bool SSTable<KeyType, ValType>::check(const KeyType &k) const {
+SSTableNode::SSTableNode() = default;
+
+uint64_t SSTable::id() const { return _id; }
+
+bool SSTable::check(const uint64_t &k) const {
   return filter.check(k); // Todo Use Binary Search Instead;
 }
 
-template <typename KeyType, typename ValType>
-KeyType SSTable<KeyType, ValType>::front() const {
-  return table.front().key;
-}
-template <typename KeyType, typename ValType>
-KeyType SSTable<KeyType, ValType>::back() const {
-  return table.back().key;
-}
+uint64_t SSTable::front() const { return table.front().key; }
 
-template <typename KeyType, typename ValType>
-bool SSTable<KeyType, ValType>::cover(const SSTable *st) const {
+uint64_t SSTable::back() const { return table.back().key; }
+
+bool SSTable::cover(const SSTable *st) const {
   return (front() <= st->front() && back() >= st->front()) ||
          (front() <= st->back() && back() >= st->back());
 }
-template <typename KeyType, typename ValType>
-SSTableNode<KeyType, ValType>
-SSTable<KeyType, ValType>::operator[](uint32_t i) {
-  return table[i];
-}
-template <typename KeyType, typename ValType>
-uint32_t SSTable<KeyType, ValType>::size() const {
-  return table.size();
-}
-template <typename KeyType, typename ValType>
-SSTable<KeyType, ValType>::SSTable(
-    uint64_t id, const std::vector<std::pair<KeyType, ValType>> &data,
-    const BloomFilter<KeyType> &filter, std::string fp, uint32_t key_size_max)
+
+SSTableNode SSTable::operator[](uint32_t i) { return table[i]; }
+
+uint32_t SSTable::size() const { return table.size(); }
+
+SSTable::SSTable(uint64_t id,
+                 const std::vector<std::pair<uint64_t, std::string>> &data,
+                 const BloomFilter<uint64_t> &filter, std::string fp)
     : _id(id), filter(filter), filepath(std::move(fp)) {
   std::ofstream fout;
   fout.open(filepath);
@@ -166,7 +152,7 @@ SSTable<KeyType, ValType>::SSTable(
 
   fout << bout;
 
-  std::vector<SSTableNode<KeyType, ValType>> v(data.size());
+  std::vector<SSTableNode> v(data.size());
   for (uint32_t i = 0; i < data.size(); ++i) {
     fout.seekp(KOffset);
     bout << data[i].first << VOffset;

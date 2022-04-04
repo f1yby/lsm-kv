@@ -20,7 +20,7 @@ int main() {
   std::cout << table.write("1.txt").check(2) << std::endl;
 
   // KVS
-  kvs::KeyValStore<uint64_t, string> kvst(".");
+  kvs::Lsm<uint64_t, string> kvst(".");
 
   kvst.put(1, "Hello");
   // get from memory

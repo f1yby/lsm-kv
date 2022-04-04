@@ -7,15 +7,16 @@
 #include "ss_table/sst_mgr.hpp"
 #include <cstddef>
 #include <list>
+#include <memory>
 #include <string>
 #include <utility>
 namespace kvs {
 
-template <typename KeyType, typename ValType> class KeyValStore {
+class Lsm {
 private:
   const std::string dir;
-  MemTable<KeyType, ValType> *mem_table;
-  SSTMgr<KeyType, ValType> sst_mgr;
+  MemTable *mem_table;
+  SSTMgr sst_mgr;
 
 public:
   /**
@@ -23,16 +24,15 @@ public:
    *
    * @param dir Directory to MemTable Root
    */
-  explicit KeyValStore(const std::string &dir)
-      : dir(dir), mem_table(new MemTable<KeyType, ValType>(0)) {
+  explicit Lsm(const std::string &dir) : dir(dir), mem_table(new MemTable(0)) {
     utils::mkdir(dir.c_str());
   }
-  KeyValStore() = delete;
-  KeyValStore(const KeyValStore &) = delete;
-  KeyValStore &operator=(const KeyValStore &) = delete;
-  KeyValStore &operator=(KeyValStore &&) = delete;
-  KeyValStore(KeyValStore &&) = delete;
-  ~KeyValStore();
+  Lsm() = delete;
+  Lsm(const Lsm &) = delete;
+  Lsm &operator=(const Lsm &) = delete;
+  Lsm &operator=(Lsm &&) = delete;
+  Lsm(Lsm &&) = delete;
+  ~Lsm();
 
   /**
    * @brief insert/Update the key-value pair
@@ -40,15 +40,14 @@ public:
    * @param key
    * @param val
    */
-  void put(const KeyType &key, const ValType &val);
+  void put(const uint64_t &key, const std::string &val);
 
   /**
    * @brief Returns the value of the given key.
    *
    * @param key
-   * @return ValType
-   */
-  std::unique_ptr<ValType> get(const KeyType &key) const;
+   * @return std::string   */
+  [[nodiscard]] std::unique_ptr<std::string> get(const uint64_t &key) const;
 
   /**
    * @brief This resets the kvstore. All key-value pairs should be removed,
@@ -66,54 +65,51 @@ public:
    * @param key2
    * @param list
    */
-  void scan(const KeyType &key1, const KeyType &key2,
-            std::list<std::pair<KeyType, ValType>> &list) const;
-  void delmem(const KeyType &key) { mem_table->remove(key); }
+  void scan(const uint64_t &key1, const uint64_t &key2,
+            std::list<std::pair<uint64_t, std::string>> &list) const;
+  void delmem(const uint64_t &key) { mem_table->remove(key); }
 
   void dump(const std::string &filepath);
 };
-template <typename KeyType, typename ValType>
-void KeyValStore<KeyType, ValType>::put(const KeyType &key,
-                                        const ValType &val) {
+
+void Lsm::put(const uint64_t &key, const std::string &val) {
   if (!mem_table->insert(key, val)) {
     dump(dir + '/' + std::to_string(mem_table->id()) + ".sst");
     mem_table->insert(key, val);
   }
 }
-template <typename KeyType, typename ValType>
-void KeyValStore<KeyType, ValType>::scan(
-    const KeyType &key1, const KeyType &key2,
-    std::list<std::pair<KeyType, ValType>> &list) const {
-  std::list<std::pair<KeyType, ValType>> ml = mem_table->scan(key1, key2);
+
+void Lsm::scan(const uint64_t &key1, const uint64_t &key2,
+               std::list<std::pair<uint64_t, std::string>> &list) const {
+  std::list<std::pair<uint64_t, std::string>> ml = mem_table->scan(key1, key2);
   sst_mgr.scan(key1, key2, ml);
   list = ml;
 }
-template <typename KeyType, typename ValType>
-KeyValStore<KeyType, ValType>::~KeyValStore() {
+
+Lsm::~Lsm() {
   delete mem_table;
   RecursiveRMDir(dir);
 }
-template <typename KeyType, typename ValType>
-void KeyValStore<KeyType, ValType>::reset() {
+
+void Lsm::reset() {
   delete mem_table;
-  mem_table = new MemTable<KeyType, ValType>(0);
+  mem_table = new MemTable(0);
   sst_mgr.clear();
 }
-template <typename KeyType, typename ValType>
-std::unique_ptr<ValType>
-KeyValStore<KeyType, ValType>::get(const KeyType &key) const {
+
+std::unique_ptr<std::string> Lsm::get(const uint64_t &key) const {
   auto p_ans = mem_table->search(key);
 
   if (p_ans != nullptr) {
-    return std::unique_ptr<ValType>(new ValType(*p_ans));
+    return std::make_unique<std::string>(*p_ans);
   } else {
     return sst_mgr.search(key);
   }
 }
-template <typename KeyType, typename ValType>
-void KeyValStore<KeyType, ValType>::dump(const std::string &filepath) {
+
+void Lsm::dump(const std::string &filepath) {
   sst_mgr.insert(mem_table->write(std::string().append(filepath)));
-  auto new_table = new MemTable<KeyType, ValType>(mem_table->id() + 1);
+  auto new_table = new MemTable(mem_table->id() + 1);
   delete mem_table;
   mem_table = new_table;
 }

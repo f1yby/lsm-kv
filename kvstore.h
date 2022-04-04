@@ -7,7 +7,7 @@
 class KVStore : public KVStoreAPI {
   // You can add your implementation here
 private:
-  kvs::KeyValStore<uint64_t, std::string> store;
+  kvs::Lsm store;
 
 public:
   explicit KVStore(const std::string &dir) : KVStoreAPI(dir), store(dir) {}
@@ -27,7 +27,7 @@ public:
     auto pair = store.get(key);
     if (pair != nullptr && *pair != "~DELETED~") {
       store.delmem(key);
-      auto pair = store.get(key);
+      pair = store.get(key);
       if (pair != nullptr && *pair != "~DELETED~") {
         store.put(key, "~DELETED~");
       }
