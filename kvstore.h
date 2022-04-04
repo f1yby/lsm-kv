@@ -1,7 +1,7 @@
 #pragma once
 
 #include "kvstore_api.h"
-#include "lsm/lsm.hpp"
+#include "lsm/lsm.h"
 #include <cstdint>
 #include <string>
 class KVStore : public KVStoreAPI {

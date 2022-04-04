@@ -1,6 +1,6 @@
 #ifndef BLOOM_FILTER_BLOOM_FILTER_HPP
 #define BLOOM_FILTER_BLOOM_FILTER_HPP
-#include "../bitstream.hpp"
+#include "utils/bitstream.h"
 #include "./hash.hpp"
 #include "MurmurHash3.h"
 #include <functional>

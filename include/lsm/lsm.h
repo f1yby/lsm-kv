@@ -3,8 +3,8 @@
 #include "bloom_filter/bloom_filter.hpp"
 #include "mem_table/mem_table.hpp"
 #include "skip_list/skip_list.hpp"
-#include "ss_table/ss_table.hpp"
-#include "ss_table/sst_mgr.hpp"
+#include "lsm/ss_table/ss_table.h"
+#include "ss_table/sst_mgr.h"
 #include <cstddef>
 #include <list>
 #include <memory>

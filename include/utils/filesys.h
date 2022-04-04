@@ -27,7 +27,13 @@ inline std::string touch(const std::string &dir, const std::string &filename,
   auto ans = std::find(ret.begin(), ret.end(), fn);
   while (ans != ret.end()) {
     ++i;
-    fn = filename + "(" + std::to_string(i) + ")" + "." + sufix;
+    fn = std::string()
+             .append(filename)
+             .append("(")
+             .append(std::to_string(i))
+             .append(")")
+             .append(".")
+             .append(sufix);
     ans = std::find(ret.begin(), ret.end(), fn);
   }
   return fn;

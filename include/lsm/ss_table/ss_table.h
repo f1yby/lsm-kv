@@ -5,7 +5,7 @@
 #include <memory>
 #include <utility>
 
-#include "../bloom_filter/bloom_filter.hpp"
+#include "bloom_filter/bloom_filter.hpp"
 #include "../mem_table/mem_table.hpp"
 
 namespace kvs {

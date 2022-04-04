@@ -1,10 +1,10 @@
 #ifndef MEM_TABLE_SS_TABLE_H
 #define MEM_TABLE_SS_TABLE_H
 
-#include "../bitstream.hpp"
-#include "../bloom_filter/bloom_filter.hpp"
-#include "../skip_list/skip_list.hpp"
-#include "../ss_table/ss_table.hpp"
+#include "utils/bitstream.h"
+#include "bloom_filter/bloom_filter.hpp"
+#include "skip_list/skip_list.hpp"
+#include "lsm/ss_table/ss_table.h"
 #include <chrono>
 #include <cstddef>
 #include <cstdio>

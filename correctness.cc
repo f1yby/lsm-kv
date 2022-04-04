@@ -1,5 +1,5 @@
-#include <iostream>
 #include <cstdint>
+#include <iostream>
 #include <string>
 
 #include "test.h"
@@ -9,8 +9,7 @@ private:
   const uint64_t SIMPLE_TEST_MAX = 512;
   const uint64_t LARGE_TEST_MAX = 1024 * 10;
 
-  void regular_test(uint64_t max)
-  {
+  void regular_test(uint64_t max) {
     uint64_t i;
 
     // Test a single key
@@ -25,23 +24,22 @@ private:
 
     // Test multiple key-value pairs
     for (i = 0; i < max; ++i) {
-      store.put(i, std::string(i+1, 's'));
-      EXPECT(std::string(i+1, 's'), store.get(i));
+      store.put(i, std::string(i + 1, 's'));
+      EXPECT(std::string(i + 1, 's'), store.get(i));
     }
     phase();
 
     // Test after all insertions
     for (i = 0; i < max; ++i)
-      EXPECT(std::string(i+1, 's'), store.get(i));
+      EXPECT(std::string(i + 1, 's'), store.get(i));
     phase();
 
     // Test deletions
-    for (i = 0; i < max; i+=2)
+    for (i = 0; i < max; i += 2)
       EXPECT(true, store.del(i));
 
     for (i = 0; i < max; ++i)
-      EXPECT((i & 1) ? std::string(i+1, 's') : not_found,
-             store.get(i));
+      EXPECT((i & 1) ? std::string(i + 1, 's') : not_found, store.get(i));
 
     for (i = 1; i < max; ++i)
       EXPECT(i & 1, store.del(i));
@@ -49,11 +47,12 @@ private:
     phase();
 
     // Test scan
-    std::list<std::pair<uint64_t, std::string> > list_ans;
-    std::list<std::pair<uint64_t, std::string> > list_stu;
+    std::list<std::pair<uint64_t, std::string>> list_ans;
+    std::list<std::pair<uint64_t, std::string>> list_stu;
     for (i = 0; i < max; ++i) {
-      store.put(i, std::string(i+1, 's'));
-      if (i < max / 2) list_ans.emplace_back(std::make_pair(i,std::string(i+1, 's')));
+      store.put(i, std::string(i + 1, 's'));
+      if (i < max / 2)
+        list_ans.emplace_back(std::make_pair(i, std::string(i + 1, 's')));
     }
 
     store.scan(0, max / 2 - 1, list_stu);
@@ -61,13 +60,12 @@ private:
 
     auto ap = list_ans.begin();
     auto sp = list_stu.begin();
-    while(ap != list_ans.end()) {
+    while (ap != list_ans.end()) {
       if (sp == list_stu.end()) {
         EXPECT((*ap).first, -1);
         EXPECT((*ap).second, not_found);
         ap++;
-      }
-      else {
+      } else {
         EXPECT((*ap).first, (*sp).first);
         EXPECT((*ap).second, (*sp).second);
         ap++;
@@ -84,12 +82,10 @@ private:
   }
 
 public:
-  CorrectnessTest(const std::string &dir, bool v=true) : Test(dir, v)
-  {
-  }
+  explicit CorrectnessTest(const std::string &dir, bool v = true)
+      : Test(dir, v) {}
 
-  void start_test(void *args = NULL) override
-  {
+  void start_test(void *args) override {
     std::cout << "KVStore Correctness Test" << std::endl;
 
     std::cout << "[Simple Test]" << std::endl;
@@ -100,13 +96,12 @@ public:
   }
 };
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   bool verbose = (argc == 2 && std::string(argv[1]) == "-v");
 
   std::cout << "Usage: " << argv[0] << " [-v]" << std::endl;
   std::cout << "  -v: print extra info for failed tests [currently ";
-  std::cout << (verbose ? "ON" : "OFF")<< "]" << std::endl;
+  std::cout << (verbose ? "ON" : "OFF") << "]" << std::endl;
   std::cout << std::endl;
   std::cout.flush();
 

@@ -2,8 +2,8 @@
 // Created by jiarui on 2022/3/17.
 //
 
-#ifndef LSM_KV_BITSTREAM_HPP
-#define LSM_KV_BITSTREAM_HPP
+#ifndef LSM_KV_BITSTREAM_H
+#define LSM_KV_BITSTREAM_H
 #include <iostream>
 #include <list>
 namespace bio {
@@ -92,11 +92,11 @@ inline size_t bitstream::rdnbyte(std::istream &i, size_t n) {
 }
 inline bitstream &bitstream::operator>>(std::string &s) {
   for (auto i : buffer) {
-    s.push_back(i);
+    s.push_back((char)i);
   }
   buffer.clear();
   return *this;
 }
 } // namespace bio
 
-#endif // LSM_KV_BITSTREAM_HPP
+#endif // LSM_KV_BITSTREAM_H
