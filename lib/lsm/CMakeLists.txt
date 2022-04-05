@@ -1,0 +1,13 @@
+add_subdirectory(memory_table)
+add_subdirectory(sstable)
+add_library(
+        lsm
+        STATIC
+        lsm.cpp
+)
+target_link_libraries(
+        lsm
+        PUBLIC
+        memory_table
+        sstable_manager
+)

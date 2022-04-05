@@ -67,9 +67,9 @@ public:
 };
 
 inline double rand_() {
-  std::random_device dev;
-  std::mt19937 rng(dev());
-  std::uniform_int_distribution<std::mt19937::result_type> key_scope(1, 1000);
+  static std::random_device dev;
+  static std::mt19937 rng(dev());
+  static std::uniform_int_distribution<std::mt19937::result_type> key_scope(1, 1000);
   auto r = key_scope(rng) / 1000.0;
   return r;
 }
