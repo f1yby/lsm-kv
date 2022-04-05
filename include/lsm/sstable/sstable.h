@@ -76,7 +76,7 @@ public:
     bin >> *ans;
     return ans;
   }
-  std::unique_ptr<std::string> search(const uint64_t &key) {
+  [[nodiscard]] std::unique_ptr<std::string> search(const uint64_t &key) const{
     if ((key < front() || back() < key) && !check(key)) {
       return {nullptr};
     }

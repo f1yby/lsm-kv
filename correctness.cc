@@ -7,7 +7,7 @@
 class CorrectnessTest : public Test {
 private:
   const uint64_t SIMPLE_TEST_MAX = 512;
-  const uint64_t LARGE_TEST_MAX = 1024*10 ;
+  const uint64_t LARGE_TEST_MAX = 1024 * 10;
 
   void regular_test(uint64_t max) {
     uint64_t i;
@@ -37,10 +37,10 @@ private:
     // Test deletions
     for (i = 0; i < max; i += 2)
       EXPECT(true, store.del(i));
-
+    phase();
     for (i = 0; i < max; ++i)
       EXPECT((i & 1) ? std::string(i + 1, 's') : not_found, store.get(i));
-
+    phase();
     for (i = 1; i < max; ++i)
       EXPECT(i & 1, store.del(i));
 
@@ -88,6 +88,7 @@ public:
       : Test(dir, v) {}
 
   void start_test(void *args) override {
+    std::cout << "KVStore Correctness Test" << std::endl;
     std::cout << "Lsm Correctness Test" << std::endl;
 
     std::cout << "[Simple Test]" << std::endl;
@@ -113,3 +114,4 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
+

@@ -10,7 +10,7 @@ class Lsm : public KVStoreAPI {
 private:
   const std::string dir;
   kvs::MemTable *mTable;
-  kvs ::SSTMgr sst_mgr;
+  kvs::SSTMgr sst_mgr;
 
 public:
   explicit Lsm(const std::string &dir)
@@ -30,7 +30,6 @@ public:
     }
   }
   ~Lsm() {
-    // TODO RM RESET
     delete mTable;
   }
 

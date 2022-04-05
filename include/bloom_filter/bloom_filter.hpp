@@ -1,8 +1,8 @@
 #ifndef BLOOM_FILTER_BLOOM_FILTER_HPP
 #define BLOOM_FILTER_BLOOM_FILTER_HPP
-#include "utils/bitstream.h"
 #include "./hash.hpp"
 #include "MurmurHash3.h"
+#include "utils/bitstream.h"
 #include <functional>
 #include <iostream>
 #include <map>
@@ -19,9 +19,16 @@ public:
   ~BloomFilter();
 
   [[nodiscard]] std::vector<std::uint16_t> data() const;
-  BloomFilter &operator=(const BloomFilter &)=default;
-  BloomFilter &operator=(BloomFilter &&) = delete;
-  BloomFilter(BloomFilter &&) = delete;
+  BloomFilter &operator=(const BloomFilter &) = default;
+  BloomFilter &operator=(BloomFilter &&b) noexcept {
+    _hash = b._hash;
+    b._hash = nullptr;
+    _data = std::move(b.data());
+    _m = b._m;
+  }
+  BloomFilter(BloomFilter &&b) noexcept :_hash(b._hash),_data(std::move(b._data)),_m(b._m){
+    b._hash= nullptr;
+  }
   void insert(const T &key);
   bool check(const T &key) const;
   template <typename FT, typename FH>

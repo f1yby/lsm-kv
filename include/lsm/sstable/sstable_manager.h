@@ -16,10 +16,10 @@
 namespace kvs {
 class SSTMgr {
 private:
-  std::vector<std::vector<SSTable>> _data;
+  std::list<std::list<SSTable>> _data;
   const std::string _dir;
   void merge();
-  void merge2(const std::list<SSTable> &l1, std::vector<SSTable> &l2,
+  void merge2(const std::list<SSTable> &l1, std::list<SSTable> &l2,
               const uint64_t lvl) {
     // TODO
     uint64_t id = l1.front().id();
@@ -69,12 +69,14 @@ private:
           }
         }
       }
+
       if (!find) {
         break;
       }
+
       auto val = std::string();
-      ii=0;
-      for (auto i=pool.begin(); i != pool.end(); ++i,++ii) {
+      ii = 0;
+      for (auto i = pool.begin(); i != pool.end(); ++i, ++ii) {
         if ((*i).size() == vector[ii]) {
           continue;
         }
@@ -85,20 +87,25 @@ private:
           ++vector[ii];
         }
       }
+
       if (!sp->insert(key_min, val)) {
-        l2.push_back(sp->write(touch(
+        l2.push_front(sp->write(touch(
             std::string().append(_dir).append("/").append("level-").append(
                 std::to_string(lvl)),
             std::to_string(id), "sst")));
         delete sp;
         sp = new MemTable(id);
+        sp->insert(key_min, val);
       }
     }
-    l2.push_back(sp->write(
+    l2.push_front(sp->write(
         touch(std::string().append(_dir).append("/").append("level-").append(
                   std::to_string(lvl)),
               std::to_string(id), "sst")));
     delete sp;
+    for (const auto &i : pool) {
+      utils::rmfile(i.filepath.c_str());
+    }
   }
 
 public:
@@ -115,13 +122,13 @@ SSTMgr::SSTMgr() : _data(1) {}
 
 void SSTMgr::insert(const SSTable &sst) {
   // Todo Hierarchy
-  _data[0].push_back(sst);
- //merge();
+  _data.front().push_front(sst);
+  merge();
 }
 
 std::unique_ptr<std::string> SSTMgr::search(const uint64_t &k) const {
   for (const auto &j : _data) {
-    for (SSTable i : j) {
+    for (const auto &i : j) {
       std::unique_ptr<std::string> ans = i.search(k);
       if (ans != nullptr) {
         return ans;
@@ -149,24 +156,27 @@ void SSTMgr::scan(const uint64_t &key1, const uint64_t &key2,
 }
 
 void SSTMgr::merge() {
-  if (_data[0].size() > 2) {
+  if (_data.front().size() > 2) {
     if (_data.size() == 1) {
       _data.emplace_back();
     }
-    merge2(std::list(_data[0].begin(),_data[0].end()), _data[1], 1);
-    _data[0].clear();
+    auto iter = _data.begin();
+    merge2(_data.front(), *(++iter), 1);
+    _data.front().clear();
     int i = 1;
-    while (_data[i].size() > i * 2 + 2) {
+    while (iter->size() > i * 2 + 2) {
       if (_data.size() == i + 1) {
         _data.emplace_back();
       }
       std::list<SSTable> v;
-      size_t e = _data[i].size() - i * 2 - 2;
+      auto iter_delete = iter->end();
+      size_t e = iter->size() - i * 2 - 2;
       for (size_t j = 0; j < e; ++j) {
-        v.push_back(_data[i][j]);
+        --iter_delete;
+        v.emplace_back(std::move(*iter_delete));
       }
-      _data[i].erase(_data[i].begin(), _data[i].begin() + (int)e);
-      merge2(v, _data[i + 1], i + 1);
+      iter->erase(iter_delete, iter->end());
+      merge2(v, *(++iter), i + 1);
       ++i;
     }
   }
