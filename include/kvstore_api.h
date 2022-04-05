@@ -13,7 +13,7 @@ public:
    * (https://en.cppreference.com/w/cpp/filesystem).
    */
   explicit KVStoreAPI(const std::string &) {}
-  KVStoreAPI() =delete;
+  KVStoreAPI() = delete;
 
   /**
    * Insert/Update the key-value pair.
@@ -34,7 +34,7 @@ public:
   virtual bool del(uint64_t key) = 0;
 
   /**
-   * This resets the kvstore. All key-value pairs should be removed,
+   * This resets the lsm. All key-value pairs should be removed,
    * including memtable and all sstables files.
    */
   virtual void reset() = 0;

@@ -19,7 +19,7 @@ public:
   ~BloomFilter();
 
   [[nodiscard]] std::vector<std::uint16_t> data() const;
-  BloomFilter &operator=(const BloomFilter &) = delete;
+  BloomFilter &operator=(const BloomFilter &)=default;
   BloomFilter &operator=(BloomFilter &&) = delete;
   BloomFilter(BloomFilter &&) = delete;
   void insert(const T &key);

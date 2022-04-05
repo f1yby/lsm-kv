@@ -115,7 +115,7 @@ inline void SkipList<KeyType, ValType>::insert(KeyType key, ValType value) {
     }
 
     auto node_lvl = SkipList::randomLevel();
-    auto node_new = new SKNode<KeyType, ValType>{key, value, NORMAL, node_lvl};
+    auto node_new = new SKNode<KeyType, ValType>(key, value, NORMAL, node_lvl);
     for (int i = 0; i < node_lvl; ++i) {
       node_new->forwards[i] = nodes[i]->forwards[i];
       nodes[i]->forwards[i] = node_new;
@@ -170,9 +170,9 @@ inline void SkipList<KeyType, ValType>::remove(KeyType key) {
       }
       nodes[i]->forwards[i] = nodes[i]->forwards[i]->forwards[i];
     }
-    delete node;
     --node_cnt;
   }
+  delete[] nodes;
 }
 template <typename KeyType, typename ValType>
 inline void SkipList<KeyType, ValType>::display() {

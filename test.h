@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-#include "kvstore.h"
+#include "lsm/lsm.h"
 
 class Test {
 protected:
@@ -59,7 +59,7 @@ protected:
     nr_passed_phases = 0;
   }
 
-  class KVStore store;
+  Lsm store;
   bool verbose;
 
 public:

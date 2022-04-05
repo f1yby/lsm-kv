@@ -7,7 +7,7 @@
 class CorrectnessTest : public Test {
 private:
   const uint64_t SIMPLE_TEST_MAX = 512;
-  const uint64_t LARGE_TEST_MAX = 1024 * 10;
+  const uint64_t LARGE_TEST_MAX = 1024*10 ;
 
   void regular_test(uint64_t max) {
     uint64_t i;
@@ -57,6 +57,7 @@ private:
 
     store.scan(0, max / 2 - 1, list_stu);
     EXPECT(list_ans.size(), list_stu.size());
+    phase();
 
     auto ap = list_ans.begin();
     auto sp = list_stu.begin();
@@ -72,6 +73,7 @@ private:
         sp++;
       }
     }
+    phase();
 
     for (i = 0; i < max; i++)
       EXPECT(true, store.del(i));
@@ -86,7 +88,7 @@ public:
       : Test(dir, v) {}
 
   void start_test(void *args) override {
-    std::cout << "KVStore Correctness Test" << std::endl;
+    std::cout << "Lsm Correctness Test" << std::endl;
 
     std::cout << "[Simple Test]" << std::endl;
     regular_test(SIMPLE_TEST_MAX);
@@ -107,7 +109,7 @@ int main(int argc, char *argv[]) {
 
   CorrectnessTest test("./data", verbose);
 
-  test.start_test();
+  test.start_test(nullptr);
 
   return 0;
 }
