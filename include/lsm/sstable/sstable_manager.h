@@ -21,6 +21,7 @@ private:
   void merge();
   void merge2(const std::list<SSTable> &l1, std::list<SSTable> &l2,
               const uint64_t lvl) {
+    bool isFinal=l2.empty();
     // TODO
     uint64_t id = l1.front().id();
     for (const auto &i : l1) {
@@ -87,7 +88,9 @@ private:
           ++vector[ii];
         }
       }
-
+      if(isFinal &&val=="~DELETED~"){
+        continue;
+      }
       if (!sp->insert(key_min, val)) {
         l2.push_front(sp->write(touch(
             std::string().append(_dir).append("/").append("level-").append(
