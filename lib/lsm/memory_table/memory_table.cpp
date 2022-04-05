@@ -9,26 +9,26 @@ MemTable::MemTable(uint64_t id, uint32_t dump_limit)
 bool MemTable::insert(const uint64_t &key, const std::string &val) {
   std::string *v = _skip_list.search(key);
   if (v) {
-    data_size -= v->size();
     data_size += val.size();
+    data_size -= v->size();
   } else {
     data_size += key_size_max + sizeof(uint32_t) + val.size();
-    if (_key_min == nullptr || key < *_key_min) {
-      delete _key_min;
-      _key_min = new uint64_t(key);
-    }
-    if (_key_max == nullptr || *_key_max < key) {
-      delete _key_max;
-      _key_max = new uint64_t(key);
-    }
   }
   if (data_size > dump) {
     return false;
-  } else {
-    _skip_list.insert(key, val);
-    _filter.insert(key);
-    return true;
   }
+  if (_key_min == nullptr || key < *_key_min) {
+    delete _key_min;
+    _key_min = new uint64_t(key);
+  }
+  if (_key_max == nullptr || *_key_max < key) {
+    delete _key_max;
+    _key_max = new uint64_t(key);
+  }
+
+  _skip_list.insert(key, val);
+  _filter.insert(key);
+  return true;
 }
 
 std::string *MemTable::search(const uint64_t &key) const {

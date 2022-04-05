@@ -1,6 +1,7 @@
 #include "lsm/sstable/sstable_manager.h"
 #include "lsm/memory_table/memory_table.h"
 #include "utils/filesys.h"
+#include <cstdint>
 namespace kvs {
 SSTMgr::SSTMgr() : _data(1) {}
 
@@ -46,7 +47,7 @@ void SSTMgr::merge() {
     auto iter = _data.begin();
     merge1(_data.front(), *(++iter));
     _data.front().clear();
-    int i = 1;
+    uint32_t i = 1;
     while (iter->size() > i * 2 + 2) {
       if (_data.size() == i + 1) {
         _data.emplace_back();
@@ -89,7 +90,7 @@ void SSTMgr::merge1(const std::list<SSTable> &l1, std::list<SSTable> &l2) {
   }
 
   auto *sp = new MemTable(id);
-  std::vector<int> vector(pool.size(), 0);
+  std::vector<uint32_t> vector(pool.size(), 0);
   std::vector<SSTable> ans;
   while (true) {
     uint64_t key_min = 0;
@@ -131,9 +132,9 @@ void SSTMgr::merge1(const std::list<SSTable> &l1, std::list<SSTable> &l2) {
         ++vector[ii];
       }
     }
-    if (isFinal && val == "~DELETED~") {
-      continue;
-    }
+    // if (isFinal && val == "~DELETED~") {
+    //   continue;
+    // }
     if (!sp->insert(key_min, val)) {
       l2.push_front(sp->write(
           touch(std::string().append(_dir).append("/").append("level-").append(
@@ -179,7 +180,7 @@ void SSTMgr::mergeN(const std::list<SSTable> &l1, std::list<SSTable> &l2,
   }
 
   auto *sp = new MemTable(id);
-  std::vector<int> vector(pool.size(), 0);
+  std::vector<uint32_t> vector(pool.size(), 0);
   std::vector<SSTable> ans;
   while (true) {
     uint64_t key_min = 0;
@@ -221,9 +222,9 @@ void SSTMgr::mergeN(const std::list<SSTable> &l1, std::list<SSTable> &l2,
         ++vector[ii];
       }
     }
-    if (isFinal && val == "~DELETED~") {
-      continue;
-    }
+    // if (isFinal && val == "~DELETED~") {
+    //   continue;
+    // }
     if (!sp->insert(key_min, val)) {
       l2.push_front(sp->write(
           touch(std::string().append(_dir).append("/").append("level-").append(
