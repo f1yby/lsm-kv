@@ -2,6 +2,7 @@
 #include "lsm/memory_table/memory_table.h"
 #include "utils/filesys.h"
 #include <cstdint>
+#include <cstdlib>
 namespace kvs {
 SSTMgr::SSTMgr() : _data(1) {}
 
@@ -45,7 +46,7 @@ void SSTMgr::merge() {
       _data.emplace_back();
     }
     auto iter = _data.begin();
-    merge1(_data.front(), *(++iter));
+    mergeN(_data.front(), *(++iter), 1);
     _data.front().clear();
     uint32_t i = 1;
     while (iter->size() > i * 2 + 2) {
@@ -156,14 +157,34 @@ void SSTMgr::merge1(const std::list<SSTable> &l1, std::list<SSTable> &l2) {
 }
 void SSTMgr::mergeN(const std::list<SSTable> &l1, std::list<SSTable> &l2,
                     uint64_t lvl) {
-  bool isFinal = l2.empty();
+  // bool isFinal = l2.empty();
+  uint64_t key_left = l1.front().front();
+  uint64_t key_right = l1.front().back();
+
+
   uint64_t id = l1.front().id();
   for (const auto &i : l1) {
     if (i.id() > id) {
       id = i.id();
     }
+    if (i.front() < key_left) {
+      key_left = i.front();
+    }
+    if (i.back() > key_right) {
+      key_right = i.back();
+    }
+  }
+
+  for (const auto &i : l1) {
+
   }
   std::list<SSTable> pool(l1);
+  if (lvl != 1) {
+    for (auto &i : pool) {
+      i.set_id(id);
+    }
+  }
+
   for (auto i = l2.begin(); i != l2.end();) {
     bool find = false;
     for (const auto &j : l1) {
@@ -179,12 +200,27 @@ void SSTMgr::mergeN(const std::list<SSTable> &l1, std::list<SSTable> &l2,
     }
   }
 
+
+  uint64_t idl=0;
+  uint64_t idr=0;
+  for(const auto& i:pool){
+    if(i.front()<key_left){
+      idl=i.id();
+    }
+    if(i.back()>key_right){
+      idr=i.id();
+    }
+  }
+
   auto *sp = new MemTable(id);
+  auto *spl = new MemTable(idl);
+  auto *spr = new MemTable(idr);
+
   std::vector<uint32_t> vector(pool.size(), 0);
-  std::vector<SSTable> ans;
   while (true) {
     uint64_t key_min = 0;
     uint64_t id_max = 0;
+
     bool find = false;
     int ii = 0;
     for (auto i = pool.begin(); i != pool.end(); ++i, ++ii) {
@@ -217,6 +253,9 @@ void SSTMgr::mergeN(const std::list<SSTable> &l1, std::list<SSTable> &l2,
       }
       if ((*i)[vector[ii]].key == key_min) {
         if (id_max == (*i).id()) {
+//          if (!val.empty()) {
+//            std::abort(); 
+//          }
           val = *(*i).get((*i)[vector[ii]]);
         }
         ++vector[ii];
@@ -225,21 +264,45 @@ void SSTMgr::mergeN(const std::list<SSTable> &l1, std::list<SSTable> &l2,
     // if (isFinal && val == "~DELETED~") {
     //   continue;
     // }
-    if (!sp->insert(key_min, val)) {
-      l2.push_front(sp->write(
-          touch(std::string().append(_dir).append("/").append("level-").append(
-                    std::to_string(lvl)),
-                std::to_string(id), "sst")));
-      delete sp;
-      sp = new MemTable(id);
-      sp->insert(key_min, val);
+    if (key_min < key_left) {
+      spl->insert(key_min, val);
+    } else if (key_min > key_right) {
+      spr->insert(key_min, val);
+    } else {
+
+      if (!sp->insert(key_min, val)) {
+        l2.push_front(sp->write(touch(
+            std::string().append(_dir).append("/").append("level-").append(
+                std::to_string(lvl)),
+            std::to_string(id), "sst")));
+        delete sp;
+        sp = new MemTable(id);
+        sp->insert(key_min, val);
+      }
     }
   }
+
   l2.push_front(sp->write(
       touch(std::string().append(_dir).append("/").append("level-").append(
                 std::to_string(lvl)),
             std::to_string(id), "sst")));
+  if (spl->size()) {
+    l2.push_back(spl->write(
+        touch(std::string().append(_dir).append("/").append("level-").append(
+                  std::to_string(lvl)),
+              std::to_string(idl), "sst")));
+  }
+  if (spr->size()) {
+    l2.push_back(spr->write(
+        touch(std::string().append(_dir).append("/").append("level-").append(
+                  std::to_string(lvl)),
+              std::to_string(idr), "sst")));
+  }
+
   delete sp;
+  delete spl;
+  delete spr;
+
   for (const auto &i : pool) {
     utils::rmfile(i.filepath.c_str());
   }

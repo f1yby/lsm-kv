@@ -38,6 +38,7 @@ public:
   SSTableNode operator[](uint32_t i);
   void scan(const uint64_t &key1, const uint64_t &key2,
             std::list<std::pair<uint64_t, std::string>> &list) const;
+  void set_id(uint64_t i);
 };
 
 // class SSTableNodePool {

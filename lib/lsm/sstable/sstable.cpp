@@ -174,4 +174,7 @@ void SSTable::scan(const uint64_t &key1, const uint64_t &key2,
     }
   }
 }
+void SSTable::set_id(uint64_t i) {
+  _id=i;
+}
 } // namespace kvs
