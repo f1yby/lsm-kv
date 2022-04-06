@@ -22,3 +22,9 @@ target_link_libraries(
         lsm
         utils
 )
+target_link_libraries(
+        LSM_KV
+        PUBLIC
+        lsm
+        utils
+)

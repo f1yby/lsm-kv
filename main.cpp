@@ -8,6 +8,9 @@
 using namespace std;
 
 int main() {
+  Lsm lsm(".data");
+  lsm.put(0, std::string(2086869, '\0'));
+  lsm.put(1, std::string(2086868, '\0'));
   kvs::MemTable table(0);
   table.insert(1, "hello");
   table.insert(2, "world");

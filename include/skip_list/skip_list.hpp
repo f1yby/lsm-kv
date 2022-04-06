@@ -128,29 +128,16 @@ template <typename KeyType, typename ValType>
 inline ValType *SkipList<KeyType, ValType>::search(KeyType key) const {
   auto node = head;
   for (auto curr_lvl = lvl - 1; curr_lvl >= 0; --curr_lvl) {
-#ifdef DEBUG
-    print_node(node, curr_lvl);
-#endif
     while (node->forwards[curr_lvl]->type != SKNodeType::END &&
            node->forwards[curr_lvl]->key < key) {
       node = node->forwards[curr_lvl];
-#ifdef DEBUG
-      print_node(node, curr_lvl);
-#endif
     }
   }
   node = node->forwards[0];
-#ifdef DEBUG
-  print_node(node, 0);
-#endif
-  if (node->key == key) {
-#ifdef DEBUG
-    std::cout << node->val << std::endl;
-#endif
-    return &(node->val); // found
+  if (node->type==SKNodeType::NORMAL&& node->key == key) {
+    return &(node->val);
   }
   return nullptr;
-  // not found
 }
 template <typename KeyType, typename ValType>
 inline void SkipList<KeyType, ValType>::remove(KeyType key) {
