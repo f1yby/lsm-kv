@@ -5,7 +5,6 @@
 #include "lsm/sstable/sstable.h"
 #include "skip_list/skip_list.hpp"
 
-
 using SkipList_t = SkipList<uint64_t, std::string>;
 using Filter_t = BloomFilter<uint64_t>;
 namespace kvs {

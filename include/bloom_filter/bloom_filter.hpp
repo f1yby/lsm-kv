@@ -26,8 +26,9 @@ public:
     _data = std::move(b.data());
     _m = b._m;
   }
-  BloomFilter(BloomFilter &&b) noexcept :_hash(b._hash),_data(std::move(b._data)),_m(b._m){
-    b._hash= nullptr;
+  BloomFilter(BloomFilter &&b) noexcept
+      : _hash(b._hash), _data(std::move(b._data)), _m(b._m) {
+    b._hash = nullptr;
   }
   void insert(const T &key);
   bool check(const T &key) const;

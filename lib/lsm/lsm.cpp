@@ -63,6 +63,4 @@ void Lsm::dump(const std::string &filepath) {
   delete mTable;
   mTable = new_table;
 }
-Lsm::~Lsm() {
-  delete mTable;
-}
+Lsm::~Lsm() { delete mTable; }

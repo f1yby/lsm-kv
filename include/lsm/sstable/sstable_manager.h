@@ -1,9 +1,9 @@
 #ifndef LSM_KV_SST_MGR_H
 #define LSM_KV_SST_MGR_H
-#include <list>
-#include <fstream>
 #include "sstable.h"
 #include "utils.h"
+#include <fstream>
+#include <list>
 namespace kvs {
 class SSTMgr {
 private:
@@ -13,6 +13,7 @@ private:
   void merge1(const std::list<SSTable> &l1, std::list<SSTable> &l2);
   void mergeN(const std::list<SSTable> &l1, std::list<SSTable> &l2,
               uint64_t lvl);
+
 public:
   SSTMgr();
   explicit SSTMgr(std::string dir);

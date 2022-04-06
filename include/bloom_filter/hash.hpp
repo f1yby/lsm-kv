@@ -37,7 +37,8 @@ private:
   std::vector<std::size_t> _pool;
 
 public:
-  explicit MurMurHash(std::size_t r) : _round(r > 4 ? 4 : r),_rounds(_round,0),_pool(_round,0) {}
+  explicit MurMurHash(std::size_t r)
+      : _round(r > 4 ? 4 : r), _rounds(_round, 0), _pool(_round, 0) {}
   std::vector<std::size_t> *operator()(const T &key) {
     std::uint32_t out[4] = {0};
     MurmurHash3_x64_128(&key, sizeof(key), 0, out);

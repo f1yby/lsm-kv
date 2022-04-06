@@ -37,6 +37,6 @@ inline std::string touch(const std::string &dir, const std::string &filename,
              .append(sufix);
     ans = std::find(ret.begin(), ret.end(), fn);
   }
-  return dir+"/"+fn;
+  return dir + "/" + fn;
 }
 #endif

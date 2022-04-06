@@ -157,10 +157,9 @@ void SSTMgr::merge1(const std::list<SSTable> &l1, std::list<SSTable> &l2) {
 }
 void SSTMgr::mergeN(const std::list<SSTable> &l1, std::list<SSTable> &l2,
                     uint64_t lvl) {
-  // bool isFinal = l2.empty();
+  bool isFinal = l2.empty();
   uint64_t key_left = l1.front().front();
   uint64_t key_right = l1.front().back();
-
 
   uint64_t id = l1.front().id();
   for (const auto &i : l1) {
@@ -176,7 +175,6 @@ void SSTMgr::mergeN(const std::list<SSTable> &l1, std::list<SSTable> &l2,
   }
 
   for (const auto &i : l1) {
-
   }
   std::list<SSTable> pool(l1);
   if (lvl != 1) {
@@ -200,15 +198,14 @@ void SSTMgr::mergeN(const std::list<SSTable> &l1, std::list<SSTable> &l2,
     }
   }
 
-
-  uint64_t idl=0;
-  uint64_t idr=0;
-  for(const auto& i:pool){
-    if(i.front()<key_left){
-      idl=i.id();
+  uint64_t idl = 0;
+  uint64_t idr = 0;
+  for (const auto &i : pool) {
+    if (i.front() < key_left) {
+      idl = i.id();
     }
-    if(i.back()>key_right){
-      idr=i.id();
+    if (i.back() > key_right) {
+      idr = i.id();
     }
   }
 
@@ -253,17 +250,14 @@ void SSTMgr::mergeN(const std::list<SSTable> &l1, std::list<SSTable> &l2,
       }
       if ((*i)[vector[ii]].key == key_min) {
         if (id_max == (*i).id()) {
-//          if (!val.empty()) {
-//            std::abort(); 
-//          }
           val = *(*i).get((*i)[vector[ii]]);
         }
         ++vector[ii];
       }
     }
-    // if (isFinal && val == "~DELETED~") {
-    //   continue;
-    // }
+    if (isFinal && val == "~DELETED~") {
+      continue;
+    }
     if (key_min < key_left) {
       spl->insert(key_min, val);
     } else if (key_min > key_right) {
