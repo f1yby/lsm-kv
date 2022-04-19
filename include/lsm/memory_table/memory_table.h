@@ -40,7 +40,7 @@ public:
   scan(const uint64_t &start, const uint64_t &end) const;
 
   [[nodiscard]] SSTable write(const std::string &filepath) const;
-  void remove(const uint64_t &key) { _skip_list.remove(key); }
+  void remove(const uint64_t &key);
 };
 
 } // namespace kvs

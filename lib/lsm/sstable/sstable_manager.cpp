@@ -25,10 +25,28 @@ std::unique_ptr<std::string> SSTMgr::search(const uint64_t &k) const {
 
 void SSTMgr::clear() {
   _data.clear();
+  _data.emplace_back();
   RecursiveRMDir(_dir);
 }
 
-SSTMgr::SSTMgr(std::string dir) : _data(1), _dir(std::move(dir)) {}
+SSTMgr::SSTMgr(std::string dir) : _data(1), _dir(std::move(dir)) {
+  if (utils::dirExists(_dir)) {
+    auto iter = _data.begin();
+    for (uint32_t lvl = 0;
+         utils::dirExists(_dir + "/level-" + std::to_string(lvl)); ++lvl) {
+      std::vector<std::string> scan_ret;
+      utils::scanDir(_dir + "/level-" + std::to_string(lvl), scan_ret);
+      for (const auto &i : scan_ret) {
+        std::string path = _dir + "/level-" + std::to_string(lvl) + "/" + i;
+        if (!utils::dirExists(path)) {
+          iter->emplace_back(path);
+        }
+      }
+    }
+  } else {
+    utils::mkdir(_dir.c_str());
+  }
+}
 
 void SSTMgr::scan(const uint64_t &key1, const uint64_t &key2,
                   std::list<std::pair<uint64_t, std::string>> &list) const {

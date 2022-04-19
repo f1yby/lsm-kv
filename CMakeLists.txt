@@ -16,6 +16,7 @@ include_directories(third_party)
 add_subdirectory(lib)
 add_executable(LSM_KV main.cpp)
 add_executable(CORRECTNESS correctness.cc)
+add_executable(PERSISTENCE persistence.cc)
 target_link_libraries(
         CORRECTNESS
         PUBLIC
@@ -24,6 +25,12 @@ target_link_libraries(
 )
 target_link_libraries(
         LSM_KV
+        PUBLIC
+        lsm
+        utils
+)
+target_link_libraries(
+        PERSISTENCE
         PUBLIC
         lsm
         utils

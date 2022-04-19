@@ -56,75 +56,74 @@ SSTable::SSTable(uint64_t id,
                  const std::vector<std::pair<uint64_t, std::string>> &data,
                  const BloomFilter<uint64_t> &filter, std::string fp)
     : _id(id), filter(filter), filepath(std::move(fp)) {
+  static std::array<uint8_t, 2 * 1024 * 1024> pool;
 
-   static std::array<uint8_t, 2 * 1024 * 1024> pool;
+  auto size = data.size();
 
-   auto size = data.size();
+  memcpy(&pool[0], &id, 8);
+  memcpy(&pool[8], &size, 8);
+  memcpy(&pool[16], &data.front().first, 8);
+  memcpy(&pool[24], &data.back().first, 8);
 
-   memcpy(&pool[0], &id, 8);
-   memcpy(&pool[8], &size, 8);
-   memcpy(&pool[16], &data.front().first, 8);
-   memcpy(&pool[24], &data.back().first, 8);
+  uint32_t KOffset = 32;
+  memcpy(&pool[KOffset], filter.data().data(), 10240);
+  KOffset += 10240;
+  uint32_t VOffset = KOffset + (key_size_max + sizeof(VOffset)) * data.size();
 
-   uint32_t KOffset = 32;
-   memcpy(&pool[KOffset], filter.data().data(), 10240);
-   KOffset += 10240;
-   uint32_t VOffset = KOffset + (key_size_max + sizeof(VOffset)) *
-   data.size();
+  table.resize(data.size());
+  for (uint32_t i = 0; i < table.size(); ++i) {
 
-   table.resize(data.size());
-   for (uint32_t i = 0; i < table.size(); ++i) {
+    table[i].key = data[i].first;
+    memcpy(&pool[KOffset], &data[i].first, key_size_max);
+    KOffset += key_size_max;
 
-     table[i].key = data[i].first;
-     memcpy(&pool[KOffset], &data[i].first, key_size_max);
-     KOffset += key_size_max;
+    table[i].offset = VOffset;
+    memcpy(&pool[KOffset], &VOffset, sizeof(uint32_t));
+    KOffset += sizeof(uint32_t);
 
-     table[i].offset = VOffset;
-     memcpy(&pool[KOffset], &VOffset, sizeof(uint32_t));
-     KOffset += sizeof(uint32_t);
+    table[i].value_len = data[i].second.size();
+    memcpy(&pool[VOffset], data[i].second.c_str(), data[i].second.size());
+    VOffset += data[i].second.size();
+  }
+  if (VOffset > 2 * 1024 * 1024) {
+    abort();
+  }
+  auto fd = fopen(filepath.c_str(), "w");
+  fwrite(pool.data(), VOffset, 1, fd);
+  fclose(fd);
 
-     table[i].value_len = data[i].second.size();
-     memcpy(&pool[VOffset], data[i].second.c_str(), data[i].second.size());
-     VOffset += data[i].second.size();
-   }
-   if (VOffset > 2 * 1024 * 1024) {
-     abort();
-   }
-   auto fd = fopen(filepath.c_str(), "w");
-   fwrite(pool.data(), pool.size(), 1, fd);
-   fclose(fd);
-
-//  std::ofstream fout;
-//  fout.open(filepath);
-//
-//  bio::bitstream bout;
-//  bout << _id << data.size() << data.front().first << data.back().first
-//       << filter;
-//  uint32_t KOffset = bout.size();
-//  uint32_t VOffset = KOffset + (key_size_max + sizeof(KOffset)) * data.size();
-//
-//  fout << bout;
-//
-//  std::vector<SSTableNode> v(data.size());
-//  for (uint32_t i = 0; i < data.size(); ++i) {
-//    fout.seekp(KOffset);
-//    bout << data[i].first << VOffset;
-//    KOffset += bout.size();
-//    fout << bout;
-//
-//    v[i].key = data[i].first;
-//    v[i].value_len = data[i].second.size();
-//    v[i].offset = VOffset;
-//    fout.seekp(VOffset);
-//    fout << data[i].second;
-//
-//    VOffset += data[i].second.size();
-//  }
-//  if(VOffset>2*1024*1024){
-//    abort();
-//  }
-//  fout.close();
-//  table = v;
+  //  std::ofstream fout;
+  //  fout.open(filepath);
+  //
+  //  bio::bitstream bout;
+  //  bout << _id << data.size() << data.front().first << data.back().first
+  //       << filter;
+  //  uint32_t KOffset = bout.size();
+  //  uint32_t VOffset = KOffset + (key_size_max + sizeof(KOffset)) *
+  //  data.size();
+  //
+  //  fout << bout;
+  //
+  //  std::vector<SSTableNode> v(data.size());
+  //  for (uint32_t i = 0; i < data.size(); ++i) {
+  //    fout.seekp(KOffset);
+  //    bout << data[i].first << VOffset;
+  //    KOffset += bout.size();
+  //    fout << bout;
+  //
+  //    v[i].key = data[i].first;
+  //    v[i].value_len = data[i].second.size();
+  //    v[i].offset = VOffset;
+  //    fout.seekp(VOffset);
+  //    fout << data[i].second;
+  //
+  //    VOffset += data[i].second.size();
+  //  }
+  //  if(VOffset>2*1024*1024){
+  //    abort();
+  //  }
+  //  fout.close();
+  //  table = v;
 }
 std::unique_ptr<std::string> SSTable::get(const SSTableNode &n) const {
   auto fd = fopen(filepath.c_str(), "r");
@@ -178,4 +177,38 @@ void SSTable::scan(const uint64_t &key1, const uint64_t &key2,
   }
 }
 void SSTable::set_id(uint64_t i) { _id = i; }
+SSTable::SSTable(const std::string &filepath)
+    : filepath(filepath), filter(10240 / 2, key_size_max), _id(0) {
+  static std::array<uint8_t, 2 * 1024 * 1024> pool;
+  auto fd = fopen(filepath.c_str(), "r");
+  uint64_t size;
+  std::vector<std::uint16_t> fv(10240 / 2, 0);
+
+  fread(&pool[0], 1, pool.size(), fd);
+  uint32_t VOffsetEnd = ftell(fd);
+  memcpy(&_id, &pool[0], 8);
+  memcpy(&size, &pool[8], 8);
+  memcpy(&fv[0], &pool[32], 10240);
+  filter.setData(fv);
+  uint32_t KOffset = 32;
+  KOffset += 10240;
+  table.resize(size);
+  uint32_t VOffsetBase =
+      KOffset + (key_size_max + sizeof(VOffsetBase)) * table.size();
+
+  for (auto &i : table) {
+
+    memcpy(&i.key, &pool[KOffset], key_size_max);
+    KOffset += key_size_max;
+
+    memcpy(&i.offset, &pool[KOffset], sizeof(uint32_t));
+    KOffset += sizeof(uint32_t);
+  }
+  for (int i = 1; i < table.size(); ++i) {
+    table[i - 1].value_len = table[i].offset - VOffsetBase;
+    VOffsetBase = table[i].offset;
+  }
+  table.back().value_len = VOffsetEnd - table.back().offset;
+  fclose(fd);
+}
 } // namespace kvs

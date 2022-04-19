@@ -26,7 +26,7 @@ public:
   SSTable(uint64_t id,
           const std::vector<std::pair<uint64_t, std::string>> &data,
           const BloomFilter<uint64_t> &filter, std::string fp);
-
+  explicit SSTable(const std::string& filepath);
   [[nodiscard]] uint64_t id() const;
   [[nodiscard]] bool check(const uint64_t &k) const;
   [[nodiscard]] uint64_t front() const;

@@ -70,4 +70,11 @@ MemTable::scan(const uint64_t &start, const uint64_t &end) const {
   return ans;
 }
 [[maybe_unused]] uint64_t MemTable::id() const { return _id; }
+void MemTable::remove(const uint64_t &key) {
+  std::string *val = _skip_list.search(key);
+  if (val != nullptr) {
+    data_size -= key_size_max + sizeof(uint32_t) + val->size();
+  }
+  _skip_list.remove(key);
+}
 } // namespace kvs

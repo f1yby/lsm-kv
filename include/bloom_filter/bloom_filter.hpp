@@ -32,6 +32,7 @@ public:
   }
   void insert(const T &key);
   bool check(const T &key) const;
+  void setData(const std::vector<std::uint16_t> &data);
   template <typename FT, typename FH>
   friend bio::bitstream &operator<<(bio::bitstream &b,
                                     const BloomFilter<FT, FH> &f);
@@ -67,12 +68,15 @@ bool BloomFilter<T, H>::check(const T &key) const {
 }
 template <typename T, typename H>
 BloomFilter<T, H>::BloomFilter(std::size_t m, std::size_t s)
-    : _hash(new H(s)), _data(std::vector<std::uint16_t>()), _m(m) {
-  _data.resize(m, 0);
+    : _hash(new H(s)), _data(std::vector<std::uint16_t>(m,0)), _m(m) {
 }
 template <typename T, typename H>
 std::vector<std::uint16_t> BloomFilter<T, H>::data() const {
   return _data;
+}
+template <typename T, typename H>
+void BloomFilter<T, H>::setData(const std::vector<std::uint16_t> &data) {
+  _data = data;
 }
 
 #endif
