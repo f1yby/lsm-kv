@@ -10,7 +10,6 @@ private:
   std::list<std::list<SSTable>> _data;
   const std::string _dir;
   void merge();
-  void merge1(const std::list<SSTable> &l1, std::list<SSTable> &l2);
   void mergeN(const std::list<SSTable> &l1, std::list<SSTable> &l2,
               uint64_t lvl);
 
