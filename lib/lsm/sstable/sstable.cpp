@@ -136,7 +136,7 @@ std::unique_ptr<std::string> SSTable::get(const SSTableNode &n) const {
   return std::make_unique<std::string>(ans);
 }
 std::unique_ptr<std::string> SSTable::search(const uint64_t &key) const {
-  if ((key < front() || back() < key) && !check(key)) {
+  if ((key < front() || back() < key)) {
     return {nullptr};
   }
   for (auto i : table) {
