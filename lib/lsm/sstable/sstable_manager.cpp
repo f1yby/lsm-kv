@@ -8,14 +8,14 @@ namespace kvs {
   SSTMgr::SSTMgr() : _data(1) {}
 
   void SSTMgr::insert(const SSTable &sst) {
-    _data.front().push_front(sst);
+    _data.front().push_back(sst);
     merge();
   }
 
   std::unique_ptr<std::string> SSTMgr::search(const uint64_t &k) const {
     for (const auto &j: _data) {
-      for (const auto &i: j) {
-        std::unique_ptr<std::string> ans = i.search(k);
+      for (auto i = j.rbegin(); i != j.rend(); ++i) {
+        std::unique_ptr<std::string> ans = i->search(k);
         if (ans != nullptr) {
           return ans;
         }
@@ -51,11 +51,45 @@ namespace kvs {
 
   void SSTMgr::scan(const uint64_t &key1, const uint64_t &key2,
                     std::list<std::pair<uint64_t, std::string>> &list) const {
-    // TODO Binary Scan
+    int lvl = 0;
     for (const auto &i: _data) {
-      for (const auto &j: i) {
-        j.scan(key1, key2, list);
+      if (lvl == 0) {
+        for (auto j = i.rbegin(); j != i.rend(); ++j) {
+          j->scan(key1, key2, list);
+        }
+      } else {
+        auto beginref = i.begin();
+        auto endref = i.end();
+        if (!i.empty()) {
+        } else if (key1 < i.front().front()) {
+          endref = i.begin();
+        } else if (key2 > i.back().back()) {
+          beginref = i.end();
+        } else {
+
+          beginref = std::lower_bound(i.begin(), i.end(), SSTable{std::vector<SSTableNode>({{key1, 0, 0}})}, [](const SSTable &left, const SSTable &right) -> bool { return left.front() < right.front(); });
+
+          if (beginref == i.end() || beginref->front() > key1 && beginref != i.begin()) {
+            --beginref;
+          }
+
+
+          endref = std::upper_bound(i.begin(), i.end(), SSTable{std::vector<SSTableNode>({{key2, 0, 0}})}, [](const SSTable &left, const SSTable &right) -> bool { return left.back() < right.back(); });
+
+
+          if (beginref->back() < key1) {
+            ++beginref;
+          }
+          if (endref != i.end() && endref->front() <= key2) {
+            ++endref;
+          }
+        }
+
+        for (auto j = beginref; j != endref; ++j) {
+          j->scan(key1, key2, list);
+        }
       }
+      ++lvl;
     }
   }
 
@@ -73,7 +107,7 @@ namespace kvs {
         if (_data.size() == i + 1) {
           _data.emplace_back();
         }
-        std::list<SSTable> v;
+        std::vector<SSTable> v;
 
         size_t e = iter->size() - i * 2 - 2;
         for (size_t j = 0; j < e; ++j) {
@@ -97,7 +131,7 @@ namespace kvs {
   }
 
 
-  void SSTMgr::mergeN(const std::list<SSTable> &l1, std::list<SSTable> &l2, uint64_t lvl) {
+  void SSTMgr::mergeN(const std::vector<SSTable> &l1, std::vector<SSTable> &l2, uint64_t lvl) {
     bool isFinal = l2.empty();
     uint64_t id = l1.front().id();
     uint64_t min = l1.front().front();
@@ -119,49 +153,34 @@ namespace kvs {
         max = i.back();
       }
     }
-    //    auto begin = std::lower_bound(l2.begin(), l2.end(), SSTable{std::vector<SSTableNode>({{min, 0, 0}})}, [](const SSTable &left, const SSTable &right) -> bool { return left.back() < right.front(); });
-    //    auto end = std::lower_bound(l2.begin(), l2.end(), SSTable{std::vector<SSTableNode>({{max, 0, 0}})}, [](const SSTable &left, const SSTable &right) -> bool { return left.back() < right.front(); });
+
     auto beginref = l2.begin();
     auto endref = l2.end();
     if (l2.empty()) {
-      ;//DO NOTHING
     } else if (max < l2.front().front()) {
       endref = l2.begin();
     } else if (min > l2.back().back()) {
       beginref = l2.end();
     } else {
-      for (auto i = l2.begin(); i != l2.end(); ++i) {
-        if (i->front() <= min) {
-          beginref = i;
-        }
+
+      beginref = std::lower_bound(l2.begin(), l2.end(), SSTable{std::vector<SSTableNode>({{min, 0, 0}})}, [](const SSTable &left, const SSTable &right) -> bool { return left.front() < right.front(); });
+
+      if (beginref == l2.end() || beginref->front() > min && beginref != l2.begin()) {
+        --beginref;
       }
-      for (auto i = l2.begin(); i != l2.end(); ++i) {
-        if (i->back() >= max) {
-          endref = i;
-          break;
-        }
-      }
+
+
+      endref = std::upper_bound(l2.begin(), l2.end(), SSTable{std::vector<SSTableNode>({{max, 0, 0}})}, [](const SSTable &left, const SSTable &right) -> bool { return left.back() < right.back(); });
+
+
       if (beginref->back() < min) {
         ++beginref;
       }
-      if (endref!=l2.end()&&endref->front() <= max) {
+      if (endref != l2.end() && endref->front() <= max) {
         ++endref;
       }
     }
 
-
-    //    if (beginref != begin) {
-    //      abort();
-    //    }
-    //    if (endref != end) {
-    //      abort();
-    //    }
-
-    for (auto i = beginref; i != endref; ++i) {
-      if (i->front() > max || i->back() < min) {
-        abort();
-      }
-    }
 
     for (auto i = beginref; i != endref; ++i) {
       i->scan(i->front(), i->back(), list);
@@ -171,21 +190,7 @@ namespace kvs {
     if (beginref != endref) {
       insert_point = l2.erase(beginref, endref);
     }
-
-
-    if (insert_point != l2.end()) {
-      if (insert_point->front() <= max) {
-        abort();
-      }
-    }
-    if (insert_point != l2.begin()) {
-      --insert_point;
-      if (insert_point->back() >= min) {
-        abort();
-      }
-      ++insert_point;
-    }
-
+    std::vector<SSTable> pool;
 
     auto *sp = new MemTable(id);
     for (const auto &i: list) {
@@ -193,11 +198,10 @@ namespace kvs {
         continue;
       }
       if (!sp->insert(i.first, i.second)) {
-        insert_point = l2.insert(insert_point, sp->write(
-                                                       touch(std::string().append(_dir).append("/").append("level-").append(
-                                                                     std::to_string(lvl)),
-                                                             std::to_string(id), "sst")));
-        ++insert_point;
+        pool.push_back(sp->write(
+                touch(std::string().append(_dir).append("/").append("level-").append(
+                              std::to_string(lvl)),
+                      std::to_string(id), "sst")));
         delete sp;
         sp = new MemTable(id);
         sp->insert(i.first, i.second);
@@ -205,22 +209,12 @@ namespace kvs {
     }
 
 
-    insert_point = l2.insert(insert_point, sp->write(
-                                                   touch(std::string().append(_dir).append("/").append("level-").append(
-                                                                 std::to_string(lvl)),
-                                                         std::to_string(id), "sst")));
-
+    pool.push_back(sp->write(
+            touch(std::string().append(_dir).append("/").append("level-").append(
+                          std::to_string(lvl)),
+                  std::to_string(id), "sst")));
+    l2.insert(insert_point, pool.begin(), pool.end());
 
     delete sp;
-
-    std::vector<SSTable> l2p(l2.begin(), l2.end());
-    for (int i = 0; i + 1 < l2p.size(); ++i) {
-      if (l2p[i].back() >= l2p[i + 1].front()) {
-        abort();
-      }
-    }
-
-    l2.clear();
-    l2.insert(l2.end(), l2p.begin(), l2p.end());
   }
 }// namespace kvs

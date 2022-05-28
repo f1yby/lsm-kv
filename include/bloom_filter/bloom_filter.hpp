@@ -27,7 +27,16 @@ public:
 
   [[nodiscard]] std::vector<std::uint16_t> data() const;
 
-  BloomFilter &operator=(const BloomFilter &) = default;
+  BloomFilter &operator=(const BloomFilter &b) {
+    if (&b == this) {
+      return *this;
+    }
+
+    this->_hash = new H(*b._hash);
+    this->_data = b._data;
+    this->_m = b._m;
+    return *this;
+  }
 
   BloomFilter &operator=(BloomFilter &&b) noexcept {
     _hash = b._hash;

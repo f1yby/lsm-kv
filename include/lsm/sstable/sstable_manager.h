@@ -7,10 +7,10 @@
 namespace kvs {
 class SSTMgr {
 private:
-  std::list<std::list<SSTable>> _data;
+  std::list<std::vector<SSTable>> _data;
   const std::string _dir;
   void merge();
-  void mergeN(const std::list<SSTable> &l1, std::list<SSTable> &l2,
+  void mergeN(const std::vector<SSTable> &l1, std::vector<SSTable> &l2,
               uint64_t lvl);
 
 public:
