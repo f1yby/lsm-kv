@@ -192,7 +192,7 @@ namespace kvs {
     }
     std::vector<SSTable> pool;
 
-    auto *sp = new MemTable(id);
+    auto *sp = new SSTableNodePool(id);
     for (const auto &i: list) {
       if (isFinal && i.second == "~DELETED~") {
         continue;
@@ -203,7 +203,7 @@ namespace kvs {
                               std::to_string(lvl)),
                       std::to_string(id), "sst")));
         delete sp;
-        sp = new MemTable(id);
+        sp = new SSTableNodePool(id);
         sp->insert(i.first, i.second);
       }
     }
@@ -213,7 +213,7 @@ namespace kvs {
             touch(std::string().append(_dir).append("/").append("level-").append(
                           std::to_string(lvl)),
                   std::to_string(id), "sst")));
-    l2.insert(insert_point, pool.begin(), pool.end());
+    l2.insert(insert_point, std::make_move_iterator(pool.begin()), std::make_move_iterator(pool.end()));
 
     delete sp;
   }
